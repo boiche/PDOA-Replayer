@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="13bb84be-30fd-41d7-a076-3b68a436244c" name="Default Changelist" comment="Splitted backend and frontend">
+      <change afterPath="$PROJECT_DIR$/PDOA-backend/pom.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/PDOA-backend/src/main/java/com/PDOAReplayer/PDOA/Controllers/UsersController.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/PDOA-backend/src/main/java/com/PDOAReplayer/PDOA/Entities/Users.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/PDOA-backend/src/main/java/com/PDOAReplayer/PDOA/PdoaReplayerApplication.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/PDOA-backend/src/main/java/com/PDOAReplayer/PDOA/Repositories/UsersRepository.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/PDOA-backend/src/main/java/com/PDOAReplayer/PDOA/ServletInitializer.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/PDOA-backend/src/main/resources/application.properties" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/PDOA-backend/src/test/java/com/PDOAReplayer/PDOA/PdoaReplayerApplicationTests.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pdoa-ui/.editorconfig" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pdoa-ui/babel.config.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pdoa-ui/package-lock.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pdoa-ui/package.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pdoa-ui/pom.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pdoa-ui/public/favicon.ico" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pdoa-ui/public/index.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pdoa-ui/src/App.vue" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pdoa-ui/src/assets/logo.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pdoa-ui/src/components/HelloWorld.vue" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pdoa-ui/src/main.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pdoa-ui/src/router/index.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pdoa-ui/src/store/index.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pdoa-ui/src/views/About.vue" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pdoa-ui/src/views/Home.vue" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pdoa-ui/tests/e2e/.eslintrc.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pdoa-ui/tests/e2e/custom-assertions/elementCount.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pdoa-ui/tests/e2e/custom-commands/customExecute.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pdoa-ui/tests/e2e/custom-commands/openHomepage.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pdoa-ui/tests/e2e/custom-commands/openHomepageClass.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pdoa-ui/tests/e2e/globals.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pdoa-ui/tests/e2e/page-objects/homepage.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pdoa-ui/tests/e2e/specs/test-with-pageobjects.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pdoa-ui/tests/e2e/specs/test.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/.gitignore" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/PDOAReplayer/PDOA/Controllers/UsersController.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/PDOAReplayer/PDOA/Entities/Users.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/PDOAReplayer/PDOA/PdoaReplayerApplication.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/PDOAReplayer/PDOA/Repositories/UsersRepository.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/PDOAReplayer/PDOA/ServletInitializer.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/application.properties" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/com/PDOAReplayer/PDOA/PdoaReplayerApplicationTests.java" beforeDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="MavenImportPreferences">
+    <option name="generalSettings">
+      <MavenGeneralSettings>
+        <option name="mavenHome" value="C:\Program Files\JetBrains\IntelliJ IDEA Community Edition 2020.2.2\plugins\maven\lib\maven3" />
+      </MavenGeneralSettings>
+    </option>
+  </component>
+  <component name="ProjectId" id="1lNYFRlGhLECSuunchn40uXcmSo" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">
+    <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/.." />
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="13bb84be-30fd-41d7-a076-3b68a436244c" name="Default Changelist" comment="" />
+      <created>1607438916812</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1607438916812</updated>
+    </task>
+    <servers />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="Splitted backend and frontend" />
+    <option name="LAST_COMMIT_MESSAGE" value="Splitted backend and frontend" />
+  </component>
+</project>
