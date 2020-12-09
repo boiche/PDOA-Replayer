@@ -1,8 +1,7 @@
 package com.PDOAReplayer.PDOA.Controllers;
 
 import com.PDOAReplayer.PDOA.Entities.Users;
-import com.PDOAReplayer.PDOA.Repositories.UsersRepository;
-import org.hibernate.cfg.NotYetImplementedException;
+import com.PDOAReplayer.PDOA.Repositories.Interfaces.UsersRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 

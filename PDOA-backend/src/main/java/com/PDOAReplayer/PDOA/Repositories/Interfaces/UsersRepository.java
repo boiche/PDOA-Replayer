@@ -1,4 +1,4 @@
-package com.PDOAReplayer.PDOA.Repositories;
+package com.PDOAReplayer.PDOA.Repositories.Interfaces;
 
 import com.PDOAReplayer.PDOA.Entities.Users;
 import org.apache.catalina.User;
