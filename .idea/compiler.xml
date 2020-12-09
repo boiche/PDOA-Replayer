@@ -8,19 +8,17 @@
         <outputRelativeToContentRoot value="true" />
         <module name="pdoa-ui" />
         <module name="PDOA-backend" />
-        <module name="PDOA" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
       <module name="familyTree" target="1.8" />
-      <module name="PDOA" target="11" />
+      <module name="PDOA" target="1.8" />
       <module name="PDOA-backend" target="11" />
       <module name="pdoa-ui" target="1.8" />
     </bytecodeTargetLevel>
   </component>
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
-      <module name="PDOA" options="-parameters" />
       <module name="PDOA-backend" options="-parameters" />
       <module name="pdoa-ui" options="-parameters" />
     </option>
