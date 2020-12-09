@@ -1,0 +1,14 @@
+<component name="ArtifactManager">
+  <artifact type="war" name="PDOA:war">
+    <output-path>$PROJECT_DIR$/target</output-path>
+    <properties id="maven-jee-properties">
+      <options>
+        <module>PDOA</module>
+        <packaging>war</packaging>
+      </options>
+    </properties>
+    <root id="archive" name="PDOA-0.0.1-SNAPSHOT.war">
+      <element id="artifact" artifact-name="PDOA:war exploded" />
+    </root>
+  </artifact>
+</component>
