@@ -4,7 +4,7 @@
       <b-navbar-brand href="/">PDOA</b-navbar-brand>
       <b-collapse id="nav-collapse" is-nav>
         <b-navbar-nav>
-          <b-nav-item href="#/replay/">PDOA Replayer</b-nav-item>
+          <b-nav-item href="/replay/">PDOA Replayer</b-nav-item>
           <b-nav-item disabled>Forum</b-nav-item>
           <b-nav-item disabled>Odds Analyser</b-nav-item>
           <b-nav-item disabled>Offers</b-nav-item>

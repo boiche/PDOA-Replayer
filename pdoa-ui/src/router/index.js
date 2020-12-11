@@ -29,10 +29,15 @@ const routes = [
     path: '/replay',
     name: 'replayIndex',
     component: ReplayIndex
+  },
+  {
+    path: '/replay/:id',
+    name: 'handReplay'
   }
 ]
 
 const router = new VueRouter({
+  mode: 'history',
   routes
 })
 

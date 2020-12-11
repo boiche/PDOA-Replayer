@@ -8,26 +8,18 @@ import java.util.Date;
 @Entity
 @Table(name = "hands")
 public class Hands {
-    @Id @GeneratedValue
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @Column
-    private String handHistory;
+    private String handBoard;
     @Column
-    private Date dateUploaded;
+    private Long owner;
 
     public void setHandHistory(String handHistory) {
-        this.handHistory = handHistory;
-    }
-
-    public void setDateUploaded(Date dateUploaded) {
-        this.dateUploaded = dateUploaded;
+        this.handBoard = handHistory;
     }
 
     public String getHandHistory() {
-        return handHistory;
-    }
-
-    public Date getDateUploaded() {
-        return dateUploaded;
+        return handBoard;
     }
 }
