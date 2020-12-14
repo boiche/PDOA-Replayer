@@ -3,7 +3,10 @@ const API_URL = 'http://localhost:8080/hands'
 
 class HandsService {
   uploadHand (hand) {
-    axios.post(API_URL + '/upload', JSON.parse(hand)).then(function (response) { console.log(response) })// upload hand and return its id
+    axios.post(API_URL + '/upload', hand).then(function (response) {
+      console.log('The data is ' + response.data.hand)
+      axios.get('http://localhost:8081')
+    })
   }
 }
 export default new HandsService()

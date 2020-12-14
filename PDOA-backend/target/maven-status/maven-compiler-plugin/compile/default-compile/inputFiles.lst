@@ -1,8 +1,13 @@
+C:\Users\boil_\Documents\Java projects\PDOA\PDOA-backend\src\main\java\com\PDOAReplayer\PDOA\Repositories\Interfaces\RolesRepository.java
 C:\Users\boil_\Documents\Java projects\PDOA\PDOA-backend\src\main\java\com\PDOAReplayer\PDOA\Repositories\Interfaces\HandsRepository.java
 C:\Users\boil_\Documents\Java projects\PDOA\PDOA-backend\src\main\java\com\PDOAReplayer\PDOA\PdoaReplayerApplication.java
 C:\Users\boil_\Documents\Java projects\PDOA\PDOA-backend\src\main\java\com\PDOAReplayer\PDOA\ServletInitializer.java
-C:\Users\boil_\Documents\Java projects\PDOA\PDOA-backend\src\main\java\com\PDOAReplayer\PDOA\Controllers\HandsController.java
 C:\Users\boil_\Documents\Java projects\PDOA\PDOA-backend\src\main\java\com\PDOAReplayer\PDOA\Entities\Users.java
+C:\Users\boil_\Documents\Java projects\PDOA\PDOA-backend\src\main\java\com\PDOAReplayer\PDOA\Models\User.java
+C:\Users\boil_\Documents\Java projects\PDOA\PDOA-backend\src\main\java\com\PDOAReplayer\PDOA\Controllers\HandsController.java
+C:\Users\boil_\Documents\Java projects\PDOA\PDOA-backend\src\main\java\com\PDOAReplayer\PDOA\security\WebSecurityConfig.java
+C:\Users\boil_\Documents\Java projects\PDOA\PDOA-backend\src\main\java\com\PDOAReplayer\PDOA\Models\ERole.java
+C:\Users\boil_\Documents\Java projects\PDOA\PDOA-backend\src\main\java\com\PDOAReplayer\PDOA\Models\Role.java
 C:\Users\boil_\Documents\Java projects\PDOA\PDOA-backend\src\main\java\com\PDOAReplayer\PDOA\Repositories\Interfaces\UsersRepository.java
 C:\Users\boil_\Documents\Java projects\PDOA\PDOA-backend\src\main\java\com\PDOAReplayer\PDOA\Entities\Hands.java
 C:\Users\boil_\Documents\Java projects\PDOA\PDOA-backend\src\main\java\com\PDOAReplayer\PDOA\Controllers\UsersController.java

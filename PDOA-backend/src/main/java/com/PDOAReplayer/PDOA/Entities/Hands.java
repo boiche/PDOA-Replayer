@@ -22,4 +22,6 @@ public class Hands {
     public String getHandHistory() {
         return handBoard;
     }
+
+    public void setOwner(Long ownerId) { this.owner = ownerId; }
 }

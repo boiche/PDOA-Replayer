@@ -15,10 +15,10 @@ public class HandsController {
     }
 
     @PostMapping(path = "/upload")
-    public Long UploadHand(@RequestBody String handHistory) {
+    public Hands UploadHand(@RequestBody String handHistory) {
         Hands newHand = new Hands();
+        newHand.setOwner(14L);
         newHand.setHandHistory(handHistory);
-        repository.saveAndFlush(newHand);
-        return repository.getLast();
+        return repository.save(newHand);
     }
 }

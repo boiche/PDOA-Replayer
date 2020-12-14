@@ -27,7 +27,7 @@ export default {
     }
   },
   methods: {
-    upload: function () {
+    upload () {
       this.content = document.getElementById('handInput').value
       console.log('entered the method')
       HandService.uploadHand(this.content)
