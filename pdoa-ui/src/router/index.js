@@ -2,6 +2,8 @@ import Vue from 'vue'
 import VueRouter from 'vue-router'
 import Home from '../views/Home.vue'
 import User from '../views/User.vue'
+import Login from '../views/Auth/Login.vue'
+import Register from '../views/Auth/Register.vue'
 import ReplayIndex from '../views/PDOA Replayer/Index.vue'
 
 Vue.use(VueRouter)
@@ -33,6 +35,16 @@ const routes = [
   {
     path: '/replay/:id',
     name: 'handReplay'
+  },
+  {
+    path: '/login',
+    name: 'login',
+    component: Login
+  },
+  {
+    path: '/register',
+    name: 'register',
+    component: Register
   }
 ]
 

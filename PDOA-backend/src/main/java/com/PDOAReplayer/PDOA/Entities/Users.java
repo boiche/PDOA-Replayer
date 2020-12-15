@@ -10,8 +10,12 @@ import java.util.Set;
 @Table(name = "users")
 public class Users {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @NotNull
+    @Column
+    private String fullName;
 
     @NotNull
     @Column
@@ -21,15 +25,20 @@ public class Users {
     @Column(name = "hash_password")
     private String password;
 
+    @Column
+    private String country;
+
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "users_roles",
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "role_id"))
     private Set<Role> roles = new HashSet<>();
     public Users() {}
-    public Users(String username, String password) {
+    public Users(String fullName, String username, String password, String country) {
         this.username = username;
         this.password = password;
+        this.fullName = fullName;
+        this.country = country;
     }
 
     public Long getId() {
