@@ -23,10 +23,24 @@
               <em>User</em>
             </template>
             <b-dropdown-item href="/register">Register</b-dropdown-item>
-            <b-dropdown-item href="/login">Login</b-dropdown-item>
+            <b-dropdown-item href="/login" v-if="!getUser()">Login</b-dropdown-item>
+            <b-dropdown-item @click.prevent="logout" v-else>Logout</b-dropdown-item>
           </b-nav-item-dropdown>
         </b-navbar-nav>
       </b-collapse>
     </b-navbar>
   </div>
 </template>
+<script>
+export default {
+  methods: {
+    logout () {
+      this.$store.dispatch('auth/logout')
+      this.$router.push('/')
+    },
+    getUser () {
+      return this.$store.state.auth.user
+    }
+  }
+}
+</script>

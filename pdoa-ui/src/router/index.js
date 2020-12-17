@@ -1,5 +1,6 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
+import UserProfile from '../views/Auth/Profile.vue'
 import Home from '../views/Home.vue'
 import User from '../views/User.vue'
 import Login from '../views/Auth/Login.vue'
@@ -45,6 +46,11 @@ const routes = [
     path: '/register',
     name: 'register',
     component: Register
+  },
+  {
+    path: '/profile',
+    name: 'userProfile',
+    component: UserProfile
   }
 ]
 

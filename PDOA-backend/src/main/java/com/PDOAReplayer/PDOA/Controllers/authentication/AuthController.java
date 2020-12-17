@@ -11,6 +11,8 @@ import com.PDOAReplayer.PDOA.Repositories.Interfaces.RolesRepository;
 import com.PDOAReplayer.PDOA.Repositories.Interfaces.UsersRepository;
 import com.PDOAReplayer.PDOA.security.jwt.JwtUtils;
 import com.PDOAReplayer.PDOA.security.services.UserDetailsImpl;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -29,6 +31,8 @@ import java.util.stream.Collectors;
 @RequestMapping("/auth")
 @CrossOrigin(origins = "*", maxAge = 3600)
 public class AuthController {
+    private Logger logger = LoggerFactory.getLogger(AuthController.class);
+
     @Autowired
     private AuthenticationManager authenticationManager;
 
@@ -44,7 +48,7 @@ public class AuthController {
     @Autowired
     private JwtUtils jwtUtils;
 
-    @PostMapping("/signin")
+    @PostMapping("/login")
     public ResponseEntity<?> authenticateUser(@RequestBody LoginRequest request) {
         Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword()));
         SecurityContextHolder.getContext().setAuthentication(authentication);
@@ -52,7 +56,7 @@ public class AuthController {
 
         UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
         List<String> roles = userDetails.getAuthorities().stream().map(role -> role.getAuthority()).collect(Collectors.toList());
-
+        if (userDetails.getAuthorities().stream().count() == 0) roles.add(ERole.ROLE_USER.toString());
         return ResponseEntity.ok(new JwtResponse(jwt, userDetails.getId(), userDetails.getUsername(), roles));
     }
 
@@ -70,25 +74,10 @@ public class AuthController {
             Role userRole = rolesRepository.findByName(ERole.ROLE_USER).orElseThrow(() -> new RuntimeException("Role " + stringRoles + " is not found!"));
             roles.add(userRole);
         }
-/*        else {
-            stringRoles.forEach(role -> {
-                switch (role) {
-                    case "admin":
-                        Role roleAdmin = rolesRepository.findByName(ERole.ROLE_ADMIN)
-                                .orElseThrow(() -> new RuntimeException("Role " + stringRoles + " is not found!"));
-                        roles.add(roleAdmin);
-                        break;
-                    //add here any other roles
-                    default:
-                        Role roleUser = rolesRepository.findByName(ERole.ROLE_USER)
-                                .orElseThrow(() -> new RuntimeException("Role " + stringRoles + " is not found!"));
-                        roles.add(roleUser);
-                }
-            });
-        }*/
 
         newUser.setRoles(roles);
         usersRepository.save(newUser);
+        //TODO: set newUser's roleID: ROLE_USER if not specified
         return ResponseEntity.ok(new MessageResponse("User " + newUser.getUsername() + " registered successfully."));
     }
 }
