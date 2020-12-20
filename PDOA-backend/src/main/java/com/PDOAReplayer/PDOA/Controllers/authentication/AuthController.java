@@ -9,6 +9,7 @@ import com.PDOAReplayer.PDOA.Entities.Role;
 import com.PDOAReplayer.PDOA.Entities.Users;
 import com.PDOAReplayer.PDOA.Repositories.Interfaces.RolesRepository;
 import com.PDOAReplayer.PDOA.Repositories.Interfaces.UsersRepository;
+import com.PDOAReplayer.PDOA.security.crypto.AES;
 import com.PDOAReplayer.PDOA.security.jwt.JwtUtils;
 import com.PDOAReplayer.PDOA.security.services.UserDetailsImpl;
 import org.slf4j.Logger;
@@ -50,6 +51,7 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<?> authenticateUser(@RequestBody LoginRequest request) {
+        String pass = AES.decrypt(request.getPassword(), request.getKey());
         Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword()));
         SecurityContextHolder.getContext().setAuthentication(authentication);
         String jwt = jwtUtils.generateJwtToken(authentication);

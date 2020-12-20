@@ -1,7 +1,14 @@
 com\PDOAReplayer\PDOA\security\services\UserDetailsServiceImpl.class
-com\PDOAReplayer\PDOA\Entities\Role.class
 com\PDOAReplayer\PDOA\security\jwt\JwtUtils.class
 com\PDOAReplayer\PDOA\security\jwt\AuthEntryPointJwt.class
-com\PDOAReplayer\PDOA\security\services\UserDetailsService.class
+com\PDOAReplayer\PDOA\security\WebSecurityConfig.class
 com\PDOAReplayer\PDOA\security\jwt\AuthTokenFilter.class
+com\PDOAReplayer\PDOA\security\services\UserDetailsImpl.class
+com\PDOAReplayer\PDOA\Controllers\payload\RegisterRequest.class
+com\PDOAReplayer\PDOA\Controllers\authentication\AuthController.class
 com\PDOAReplayer\PDOA\Entities\ERole.class
+com\PDOAReplayer\PDOA\Entities\Role.class
+com\PDOAReplayer\PDOA\Controllers\payload\JwtResponse.class
+com\PDOAReplayer\PDOA\Controllers\payload\LoginRequest.class
+com\PDOAReplayer\PDOA\Controllers\payload\MessageResponse.class
+com\PDOAReplayer\PDOA\security\crypto\AES.class
