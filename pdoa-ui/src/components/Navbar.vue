@@ -41,9 +41,6 @@ export default {
     getUser () {
       return this.$store.state.auth.user
     }
-  },
-  mounted () {
-    this.getUser()
   }
 }
 </script>

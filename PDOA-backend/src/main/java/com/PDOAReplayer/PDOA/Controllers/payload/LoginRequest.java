@@ -9,12 +9,6 @@ public class LoginRequest {
     @NotNull
     private String password;
 
-    @NotNull
-    private byte[] key;
-
-    @NotNull
-    private String initVector;
-
     public String getUsername() {
         return username;
     }
@@ -29,17 +23,5 @@ public class LoginRequest {
 
     public void setPassword(String password) {
         this.password = password;
-    }
-
-    public byte[] getKey() { return key; }
-
-    public void setKey(byte[] key) { this.key = key; }
-
-    public String getInitVector() {
-        return initVector;
-    }
-
-    public void setInitVector(String initVector) {
-        this.initVector = initVector;
     }
 }
