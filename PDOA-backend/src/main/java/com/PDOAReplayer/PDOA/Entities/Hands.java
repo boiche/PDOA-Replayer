@@ -14,6 +14,8 @@ public class Hands {
     private String handBoard;
     @Column
     private Long owner;
+    @Column
+    private Date uploaded;
 
     public void setHandHistory(String handHistory) {
         this.handBoard = handHistory;
@@ -24,4 +26,16 @@ public class Hands {
     }
 
     public void setOwner(Long ownerId) { this.owner = ownerId; }
+
+    public Date getUploaded() {
+        return uploaded;
+    }
+
+    public void setUploaded(Date uploaded) {
+        this.uploaded = uploaded;
+    }
+
+    public Long getId() {
+        return id;
+    }
 }

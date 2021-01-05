@@ -6,13 +6,17 @@ class AuthService {
   registerUser (data) {
     return axios.post(API_URL + '/register', data).then(function (response) {
       console.log('Front-end message: user ' + data.username + 'registered successfully!')
-      router.push('/')
+
+      router.push('/login')
     })
   }
 
   loginUser (data) {
-    return axios.post(API_URL + '/login', data).then(function (response) {
-      console.log('the token is: ' + response.data.token)
+    const dataForm = {
+      username: data.username,
+      password: data.password
+    }
+    return axios.post(API_URL + '/login', dataForm).then(function (response) {
       if (response.data.token) {
         localStorage.setItem('user', JSON.stringify(response.data))
       }

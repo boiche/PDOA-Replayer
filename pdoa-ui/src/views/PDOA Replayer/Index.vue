@@ -6,13 +6,9 @@
 </template>
 <script>
 import HandInput from '../../components/HandInput.vue'
-import HandsService from '../../services/handsService.js'
 export default {
   components: {
     HandInput
-  },
-  onsubmit () {
-    HandsService.uploadHand(HandInput.handInput)
   }
 }
 </script>

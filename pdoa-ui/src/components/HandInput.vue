@@ -23,14 +23,14 @@ import HandService from '../services/handsService.js'
 export default {
   data () {
     return {
-      content: ''
+      content: '',
+      id: ''
     }
   },
   methods: {
     upload () {
       this.content = document.getElementById('handInput').value
-      console.log('entered the method')
-      HandService.uploadHand(this.content)
+      HandService.uploadHand(this.content, this.$store.state.auth.user.username)
     }
   }
 }
