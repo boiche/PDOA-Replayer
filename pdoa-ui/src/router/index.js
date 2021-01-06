@@ -32,12 +32,18 @@ const routes = [
   {
     path: '/replay',
     name: 'replayIndex',
-    component: ReplayIndex
+    component: ReplayIndex,
+    meta: {
+      requiresAuth: true
+    }
   },
   {
     path: '/replay/:id',
     name: 'handReplay',
-    component: HandReplay
+    component: HandReplay,
+    meta: {
+      requiresAuth: true
+    }
   },
   {
     path: '/login',
@@ -52,13 +58,30 @@ const routes = [
   {
     path: '/profile',
     name: 'userProfile',
-    component: UserProfile
+    component: UserProfile,
+    meta: {
+      requiresAuth: true
+    }
   }
 ]
 
 const router = new VueRouter({
   mode: 'history',
   routes
+})
+
+router.beforeEach((from, to, next) => {
+  if (from.meta.requiresAuth) {
+    if (!window.localStorage.getItem('user')) {
+      next({
+        name: 'login'
+      })
+    } else {
+      next()
+    }
+  } else {
+    next()
+  }
 })
 
 export default router

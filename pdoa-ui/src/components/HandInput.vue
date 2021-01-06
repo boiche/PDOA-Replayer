@@ -8,12 +8,9 @@
       </div>
     </div>
     <form>
-      <label class="switch">
-        Anonymise
-        <input type="checkbox">
-        <span class="slider round"></span>
-      </label>
-      <button type="submit" class="btn btn-success" v-on:click="upload">Upload</button>
+      <router-link to="/replay/:id" class="m-2">
+        <button type="submit" class="btn btn-success" v-on:click="upload">Upload</button>
+      </router-link>
     </form>
   </div>
 </template>

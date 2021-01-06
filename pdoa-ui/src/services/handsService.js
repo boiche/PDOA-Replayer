@@ -6,12 +6,9 @@ class HandsService {
   async uploadHand (hand, username) {
     let handId
     await axios.post(API_URL + '/upload', { hand, username }).then(function (response) {
-      console.log('The response id is ' + response.data.id)
       handId = response.data.id
     })
-    console.log('Hand id: ' + handId)
     router.push({ name: 'handReplay', params: { id: handId } })
-    // router.push({ path: `/replay/${handId}` })
   }
 
   async getAll () {

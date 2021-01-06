@@ -1,7 +1,5 @@
 package com.PDOAReplayer.PDOA.Entities;
 
-import org.springframework.cglib.core.GeneratorStrategy;
-
 import javax.persistence.*;
 import java.util.Date;
 
@@ -24,6 +22,8 @@ public class Hands {
     public String getHandHistory() {
         return handBoard;
     }
+
+    public Long getOwner() { return owner; }
 
     public void setOwner(Long ownerId) { this.owner = ownerId; }
 

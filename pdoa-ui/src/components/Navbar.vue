@@ -4,11 +4,18 @@
       <b-navbar-brand href="/">PDOA</b-navbar-brand>
       <b-collapse id="nav-collapse" is-nav>
         <b-navbar-nav>
-          <b-nav-item v-if="getUser()" href="/replay/">PDOA Replayer</b-nav-item>
-          <b-nav-item v-else href="/login/">PDOA Replayer</b-nav-item>
-          <b-nav-item disabled>Forum</b-nav-item>
-          <b-nav-item disabled>Odds Analyser</b-nav-item>
-          <b-nav-item disabled>Offers</b-nav-item>
+          <b-nav-item>
+            <router-link to="/replay">PDOA Replayer</router-link>
+          </b-nav-item>
+          <b-nav-item disabled>
+            <router-link to="/forum">Forum</router-link>
+          </b-nav-item>
+          <b-nav-item disabled>
+            <router-link to="/analyser">Odds Analyser</router-link>
+          </b-nav-item>
+          <b-nav-item disabled>
+            <router-link to="/offers">Offers</router-link>
+          </b-nav-item>
         </b-navbar-nav>
 
         <!-- Right aligned nav items -->
