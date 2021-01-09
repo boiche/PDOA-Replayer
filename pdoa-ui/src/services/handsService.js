@@ -18,5 +18,17 @@ class HandsService {
     })
     return a
   }
+
+  async getHandHistory (id) {
+    var handData
+    await axios.post(API_URL + '/getHand', { id }).then(function (response) {
+      handData = response.data
+    }, function (error) {
+      console.log(error)
+      console.clear()
+      router.push('/')
+    })
+    return handData
+  }
 }
 export default new HandsService()

@@ -1,9 +1,9 @@
 package com.PDOAReplayer.PDOA.Controllers.authentication;
 
-import com.PDOAReplayer.PDOA.Controllers.payload.JwtResponse;
-import com.PDOAReplayer.PDOA.Controllers.payload.LoginRequest;
-import com.PDOAReplayer.PDOA.Controllers.payload.MessageResponse;
-import com.PDOAReplayer.PDOA.Controllers.payload.RegisterRequest;
+import com.PDOAReplayer.PDOA.Controllers.payload.responses.JwtResponse;
+import com.PDOAReplayer.PDOA.Controllers.payload.requests.LoginRequest;
+import com.PDOAReplayer.PDOA.Controllers.payload.responses.MessageResponse;
+import com.PDOAReplayer.PDOA.Controllers.payload.requests.RegisterRequest;
 import com.PDOAReplayer.PDOA.Entities.ERole;
 import com.PDOAReplayer.PDOA.Entities.Role;
 import com.PDOAReplayer.PDOA.Entities.Users;

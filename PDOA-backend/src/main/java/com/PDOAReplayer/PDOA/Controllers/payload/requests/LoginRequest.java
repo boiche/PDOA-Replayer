@@ -1,4 +1,4 @@
-package com.PDOAReplayer.PDOA.Controllers.payload;
+package com.PDOAReplayer.PDOA.Controllers.payload.requests;
 
 import com.sun.istack.NotNull;
 
