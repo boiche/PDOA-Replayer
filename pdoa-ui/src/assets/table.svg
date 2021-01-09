@@ -1,0 +1,19 @@
+<svg width="559" height="199" xmlns="http://www.w3.org/2000/svg">
+ <!-- Created with Method Draw - http://github.com/duopixel/Method-Draw/ -->
+
+ <g>
+  <title>background</title>
+  <rect fill="#fff" id="canvas_background" height="201" width="561" y="-1" x="-1"/>
+  <g display="none" overflow="visible" y="0" x="0" height="100%" width="100%" id="canvasGrid">
+   <rect fill="url(#gridpattern)" stroke-width="0" y="1" x="1" height="404" width="557"/>
+  </g>
+ </g>
+ <g>
+  <title>Layer 1</title>
+  <g id="svg_4">
+   <ellipse stroke="#000" ry="95" rx="273.50001" id="svg_1" cy="101" cx="278" stroke-width="3" fill="#293414"/>
+   <ellipse stroke="#000" ry="81" rx="249.99999" id="svg_2" cy="101.00002" cx="277.49999" stroke-opacity="null" stroke-width="6" fill="#619E73"/>
+   <text opacity="0.63" font-style="normal" font-weight="normal" xml:space="preserve" text-anchor="start" font-family="monospace" font-size="24" id="svg_3" y="110.40156" x="192.22656" stroke-opacity="null" stroke-width="0" stroke="#000" fill="#000000">PDOA Replayer</text>
+  </g>
+ </g>
+</svg>
