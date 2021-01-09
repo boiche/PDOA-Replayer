@@ -1,20 +1,20 @@
 <template>
-  <div id="handReplay" style="height:100%">
+  <div id="handReplay" style="height: 100%">
     <div style="margin-bottom:25px">
       <h1>Hand by {{username}}</h1>
       <p>{{gameName}}</p>
     </div>
-    <Table :seats="seats"></Table>
+    <Table></Table>
   </div>
 </template>
 <script>
 import Table from '../../components/Replay/Table.vue'
 import HandService from '../../services/handsService.js'
+
 export default {
   data () {
     return {
       handHistory: '',
-      seats: '',
       username: '',
       gameName: ''
     }
@@ -31,9 +31,8 @@ export default {
       return id
     }
   },
-  mounted: async function () {
+  async created () {
     this.handHistory = await HandService.getHandHistory(this.getId())
-    this.seats = this.handHistory.seats
     this.username = this.handHistory.username
     this.gameName = this.handHistory.handHistory.handHistory.match('Tournament.+\\)').toString()
   }
