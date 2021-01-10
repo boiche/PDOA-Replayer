@@ -1,5 +1,5 @@
 <template>
-  <div class="col-md-12">
+  <div>
     <div class="card card-container">
       <img id="profile-img" src="//ssl.gstatic.com/accounts/ui/avatar_2x.png" class="profile-img-card"/>
       <form name="form" @submit.prevent="handleLogin">
