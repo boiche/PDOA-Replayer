@@ -28,7 +28,7 @@ import ReplayService from '../../services/replayService.js'
 export default {
   data () {
     return {
-      playersInitialSeat: '',
+      playerInitialSeat: '',
       playersFirstSuit: 'backs',
       playersFirstCard: '2B',
       playersSecondSuit: 'backs',
@@ -58,9 +58,9 @@ export default {
     setButtonCoords (handHistory) {
       var button = document.getElementById('button')
       var seatId = handHistory.match('#\\d is the button')[0][1]
-      var dealerUsername = handHistory.match(seatId + ': .+ \\((\\$|\\d)')[0]
+      var dealerUsername = handHistory.match(seatId + ': [^ ]+ \\((\\$|\\d)')[0]
       dealerUsername = dealerUsername.substring(3, dealerUsername.length - 3)
-      var dealerSeat = this.usernames.indexOf(dealerUsername)
+      var dealerSeat = this.usernames.indexOf(dealerUsername) + 1
       var seat = document.getElementById('seat' + dealerSeat)
       switch (dealerSeat) {
         case 1:
@@ -77,27 +77,27 @@ export default {
           break
         case 4:
           button.setAttribute('x', seat.getBoundingClientRect().x)
-          button.setAttribute('y', seat.getBoundingClientRect().y + button.getBoundingClientRect().width / 1.5)
+          button.setAttribute('y', seat.getBoundingClientRect().y - button.getBoundingClientRect().height / 3)
           break
         case 5:
           button.setAttribute('x', seat.getBoundingClientRect().x)
-          button.setAttribute('y', seat.getBoundingClientRect().y + button.getBoundingClientRect().width / 1.5)
+          button.setAttribute('y', seat.getBoundingClientRect().y - button.getBoundingClientRect().height / 3)
           break
         case 6:
-          button.setAttribute('x', seat.getBoundingClientRect().x)
-          button.setAttribute('y', seat.getBoundingClientRect().y + button.getBoundingClientRect().width / 1.5)
+          button.setAttribute('x', seat.getBoundingClientRect().x * 1.5)
+          button.setAttribute('y', seat.getBoundingClientRect().y)
           break
         case 7:
-          button.setAttribute('x', seat.getBoundingClientRect().x)
-          button.setAttribute('y', seat.getBoundingClientRect().y + button.getBoundingClientRect().width / 1.5)
+          button.setAttribute('x', seat.getBoundingClientRect().x * 0.9)
+          button.setAttribute('y', seat.getBoundingClientRect().y)
           break
         case 8:
-          button.setAttribute('x', seat.getBoundingClientRect().x)
-          button.setAttribute('y', seat.getBoundingClientRect().y + button.getBoundingClientRect().width / 1.5)
+          button.setAttribute('x', seat.getBoundingClientRect().x * 0.85)
+          button.setAttribute('y', seat.getBoundingClientRect().y - seat.getBoundingClientRect().height * 1.5)
           break
         case 9:
-          button.setAttribute('x', seat.getBoundingClientRect().x)
-          button.setAttribute('y', seat.getBoundingClientRect().y + button.getBoundingClientRect().width / 1.5)
+          button.setAttribute('x', seat.getBoundingClientRect().x * 1.75)
+          button.setAttribute('y', seat.getBoundingClientRect().y - seat.getBoundingClientRect().height * 1.1)
           break
       }
     }
@@ -111,9 +111,6 @@ export default {
     }
 
     if (a.handHistory.handHistory.match(a.username)[0] !== '') {
-      this.usernames.push(a.username)
-      this.chips.push(a.handHistory.handHistory.match(a.username + ' \\(.+ in chips\\)')[0].match('\\(\\$?\\d+\\.?\\d+')[0].substring(1))
-
       var playersHand = a.handHistory.handHistory.match('\\[(([2-9]|[AKQJT])[scdh]) (([2-9]|[AKQJT])[scdh])\\]')[0]
       switch (playersHand[2].toUpperCase()) {
         case 'S': this.playersFirstSuit = 'spades'; break
@@ -138,12 +135,13 @@ export default {
       this.playersSecondCard = '2B'
     }
 
-    var opps = ReplayService.gatherOppsNames(a.handHistory.handHistory, a.username, a.seats)
-    this.usernames = opps
+    var playersData = ReplayService.gatherPlayersData(a.handHistory.handHistory, a.username, a.seats)
+    this.usernames = playersData[0][0]
+    this.chips = playersData[1][0]
 
-    this.playersInitialSeat = a.handHistory.handHistory.match('Seat \\d: ' + a.username)[0].substr(5, 1)
+    this.playerInitialSeat = a.handHistory.handHistory.match('Seat \\d: ' + a.username)[0].substr(5, 1)
     this.setButtonCoords(a.handHistory.handHistory)
-    ReplayService.populateSteps(a.handHistory.handHistory)
+    ReplayService.populateSteps(a.handHistory.handHistory, this.usernames, this.chips)
   }
 }
 </script>
