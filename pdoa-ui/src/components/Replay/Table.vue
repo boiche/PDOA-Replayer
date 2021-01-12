@@ -1,13 +1,13 @@
 <template>
     <svg id="table" width="90%" height="90%">
       <image :href="require('../../assets/table.svg')" x="5%" y="65" width="90%"></image>
-      <text id="potInfo" fill="black" stroke-width="1" stroke="DarkSlateGray" font-size="20" x="46%" y="200">Pot: {{pot}}</text>
       <image :href="require('../../assets/button.svg')" id="button"></image>
       <Card :id="'flop1'" :suit="flop[0].suit" :card="flop[0].card"></Card>
       <Card :id="'flop2'" :suit="flop[1].suit" :card="flop[1].card"></Card>
       <Card :id="'flop3'" :suit="flop[2].suit" :card="flop[2].card"></Card>
       <Card :id="'turn'" :suit="turn.suit" :card="turn.card"></Card>
       <Card :id="'river'" :suit="river.suit" :card="river.card"></Card>
+      <Pot></Pot>
       <Seat :id="'seat6'" :chips="chips[3]" :username="usernames[3]" :x="125" :y="45" firstSuit="backs" secondSuit="backs" firstCard="2B" secondCard="2B"></Seat>
       <Seat :id="'seat2'" :chips="chips[2]" :username="usernames[2]" :x="30" :y="190" firstSuit="backs" secondSuit="backs" firstCard="2B" secondCard="2B"></Seat>
       <Seat :id="'seat9'" :chips="chips[1]" :username="usernames[1]" :x="100" :y="350" firstSuit="backs" secondSuit="backs" firstCard="2B" secondCard="2B"></Seat>
@@ -22,6 +22,8 @@
 <script>
 import Seat from '../../components/Replay/Seat.vue'
 import Card from '../../components/Replay/Card.vue'
+import Pot from '@/components/Replay/Pot.vue'
+
 import HandService from '../../services/handsService.js'
 import ReplayService from '../../services/replayService.js'
 
@@ -39,13 +41,13 @@ export default {
         { suit: 'backs', card: '2B' }, { suit: 'backs', card: '2B' }, { suit: 'backs', card: '2B' }
       ],
       turn: { suit: 'backs', card: '2B' },
-      river: { suit: 'backs', card: '2B' },
-      pot: 0
+      river: { suit: 'backs', card: '2B' }
     }
   },
   components: {
     Seat,
-    Card
+    Card,
+    Pot
   },
   methods: {
     getId () {
@@ -62,6 +64,7 @@ export default {
       dealerUsername = dealerUsername.substring(3, dealerUsername.length - 3)
       var dealerSeat = this.usernames.indexOf(dealerUsername) + 1
       var seat = document.getElementById('seat' + dealerSeat)
+      console.log(dealerSeat)
       switch (dealerSeat) {
         case 1:
           button.setAttribute('x', seat.getBoundingClientRect().x)
@@ -77,11 +80,11 @@ export default {
           break
         case 4:
           button.setAttribute('x', seat.getBoundingClientRect().x)
-          button.setAttribute('y', seat.getBoundingClientRect().y - button.getBoundingClientRect().height / 3)
+          button.setAttribute('y', seat.getBoundingClientRect().y * 0.9)
           break
         case 5:
           button.setAttribute('x', seat.getBoundingClientRect().x)
-          button.setAttribute('y', seat.getBoundingClientRect().y - button.getBoundingClientRect().height / 3)
+          button.setAttribute('y', seat.getBoundingClientRect().y * 0.9)
           break
         case 6:
           button.setAttribute('x', seat.getBoundingClientRect().x * 1.5)
@@ -141,7 +144,7 @@ export default {
 
     this.playerInitialSeat = a.handHistory.handHistory.match('Seat \\d: ' + a.username)[0].substr(5, 1)
     this.setButtonCoords(a.handHistory.handHistory)
-    ReplayService.populateSteps(a.handHistory.handHistory, this.usernames, this.chips)
+    ReplayService.populateSteps(a.handHistory.handHistory, this.usernames)
   }
 }
 </script>

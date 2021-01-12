@@ -1,4 +1,5 @@
 class ReplayService {
+  potService = require('./potService')
   pot = 0
   actions = []
   currentActionIndex = 0
@@ -9,8 +10,12 @@ class ReplayService {
   chips = []
   actionPattern = '.+: (folds|calls|checks|raises|bets)( \\d+( to \\d+)?)?'
   showdownActionPattern = '.+: (shows|mucks) (\\[.+\\]|hand)'
+  darkBetPattern = '.+: posts (the )?(ante|(small blind)|(big blind)) \\d+'
   playing = false
   currentActionIndex = 0
+  potElement
+  potInfoElement
+  tableElement
 
   initializeReplay (handHistory, usernames, chips) {
     this.handHistory = handHistory
@@ -18,12 +23,14 @@ class ReplayService {
     this.seats = document.getElementsByClassName('playerSeat')
     this.usernames = usernames
     this.chips = chips
+    this.potInfoElement = document.getElementById('potInfo')
+    this.potElement = document.getElementById('pot')
+    this.tableElement = document.getElementById('table')
   }
 
   populateSteps (handHistory, usernames, chips) {
     this.initializeReplay(handHistory, usernames, chips)
-    this.actions.push({ method: this.postSmallBlind, params: null })
-    this.actions.push({ method: this.postBigBlind, params: null })
+    this.visualizeDarkBets()
     var toContinue = this.visualizePreflopAction()
     if (toContinue) {
       this.actions.push({ method: this.showFlop, params: null })
@@ -35,7 +42,7 @@ class ReplayService {
           this.actions.push({ method: this.showRiver, params: null })
           toContinue = this.visualizeRiverAction()
           if (toContinue) {
-            this.actions.push({ method: this.visualizeShowDown, params: null })
+            this.visualizeShowDown()
           }
         }
       }
@@ -48,13 +55,11 @@ class ReplayService {
       if (this.playing) {
         var currentAction = this.actions[i]
         currentAction.method.call(this, currentAction.params)
-        await this.delay(1000)
+        await this.delay(500)
       } else {
-        this.currentActionIndex = i
         return
       }
-
-      console.log(i)
+      this.currentActionIndex = i + 1
     }
   }
 
@@ -63,8 +68,28 @@ class ReplayService {
   }
 
   playCurrent () {
+    if (this.currentActionIndex >= this.actions.length) {
+      return
+    }
     var functionToCall = this.actions[this.currentActionIndex]
     functionToCall.method.call(this, functionToCall.params)
+    this.currentActionIndex++
+  }
+
+  visualizeDarkBets () {
+    var matches = this.handHistory.matchAll(this.darkBetPattern)
+    for (const match of matches) {
+      match[0] = match[0].replace('the ', '').replace('blind ', '')
+      var actionDetails = match[0].split(' ')
+      var username = actionDetails[0].replace(':', '')
+      var action = actionDetails[2]
+      var amount = actionDetails[3]
+      switch (action) {
+        case 'big': this.actions.push({ method: this.bigBlind, params: [username, amount] }); break
+        case 'small': this.actions.push({ method: this.smallBlind, params: [username, amount] }); break
+        case 'ante': this.actions.push({ method: this.ante, params: [username, amount] }); break
+      }
+    }
   }
 
   visualizePreflopAction () {
@@ -106,7 +131,7 @@ class ReplayService {
       flopEndIndex = this.handActions.indexOf(turnData[0])
     }
     var flopIndex = this.handActions.indexOf(this.handHistory.match('\\*\\*\\* FLOP \\*\\*\\*.+')[0]) + 1
-
+    this.clearBets()
     for (var i = flopIndex; i < flopEndIndex; i++) {
       var currentAction = this.handActions[i]
       if (currentAction.match(this.actionPattern)) {
@@ -139,6 +164,7 @@ class ReplayService {
 
     for (var i = turnIndex; i < turnEndIndex; i++) {
       var currentAction = this.handActions[i]
+      console.log(currentAction)
       if (currentAction.match(this.actionPattern)) {
         var actionDetails = currentAction.split(' ')
         actionDetails[0] = actionDetails[0].replace(':', '')
@@ -203,17 +229,88 @@ class ReplayService {
     }
   }
 
+  visualizeBet (amount, element) {
+    var chipPile = this.potService.getChipsFor(amount)
+    var diffY = 0
+    for (var i = 0; i < chipPile.length; i++) {
+      var chipImage = document.createElementNS('http://www.w3.org/2000/svg', 'image')
+      chipImage.setAttribute('class', 'chipInfo ' + element.id)
+      chipImage.setAttribute('href', require('@/assets/chips/' + chipPile[i] + '.svg'))
+      switch (element.id) {
+        case 'seat1':
+          chipImage.setAttribute('x', element.getBoundingClientRect().x)
+          chipImage.setAttribute('y', element.getBoundingClientRect().y * 0.67 - diffY)
+          break
+        case 'seat2':
+          chipImage.setAttribute('x', element.getBoundingClientRect().x * 2.25)
+          chipImage.setAttribute('y', element.getBoundingClientRect().y * 0.8 - diffY)
+          break
+        case 'seat3':
+          chipImage.setAttribute('x', element.getBoundingClientRect().x * 0.87)
+          chipImage.setAttribute('y', element.getBoundingClientRect().y * 0.8 - diffY)
+          break
+        case 'seat4':
+          chipImage.setAttribute('x', element.getBoundingClientRect().x)
+          chipImage.setAttribute('y', element.getBoundingClientRect().y * 0.9 - diffY)
+          break
+        case 'seat5':
+          chipImage.setAttribute('x', element.getBoundingClientRect().x)
+          chipImage.setAttribute('y', element.getBoundingClientRect().y * 0.9 - diffY)
+          break
+        case 'seat6':
+          chipImage.setAttribute('x', element.getBoundingClientRect().x * 1.5)
+          chipImage.setAttribute('y', element.getBoundingClientRect().y - diffY)
+          break
+        case 'seat7':
+          chipImage.setAttribute('x', element.getBoundingClientRect().x * 0.9)
+          chipImage.setAttribute('y', element.getBoundingClientRect().y - diffY)
+          break
+        case 'seat8':
+          chipImage.setAttribute('x', element.getBoundingClientRect().x * 0.85)
+          chipImage.setAttribute('y', element.getBoundingClientRect().y - element.getBoundingClientRect().height * 1.5 - diffY)
+          break
+        case 'seat9':
+          chipImage.setAttribute('x', element.getBoundingClientRect().x * 1.75)
+          chipImage.setAttribute('y', element.getBoundingClientRect().y - element.getBoundingClientRect().height * 1.1 - diffY)
+          break
+      }
+      this.tableElement.appendChild(chipImage)
+      diffY += 6
+    }
+  }
+
   updatePot (amount) {
     this.pot += amount
-    document.getElementById('potInfo').textContent = 'Pot: ' + this.pot
+    this.potInfoElement.textContent = 'Pot: ' + this.pot
   }
 
-  postSmallBlind () {
-    this.updatePot(40)
+  ante (data) {
+    var username = data[0]
+    var amount = parseInt(data[1])
+    var seatToPostAnte = this.getSeat(username)
+    this.updatePot(amount)
+    this.updateChips(amount, seatToPostAnte)
+    this.displayComment('ANTE', username, seatToPostAnte)
   }
 
-  postBigBlind () {
-    this.updatePot(80)
+  smallBlind (data) {
+    var username = data[0]
+    var amount = parseInt(data[1])
+    var seatToPostSmallBlind = this.getSeat(username)
+    this.updatePot(amount)
+    this.updateChips(amount, seatToPostSmallBlind)
+    this.visualizeBet(amount, seatToPostSmallBlind)
+    this.displayComment('SMALL BLIND', username, seatToPostSmallBlind)
+  }
+
+  bigBlind (data) {
+    var username = data[0]
+    var amount = parseInt(data[1])
+    var seatToPostBigBlind = this.getSeat(username)
+    this.updatePot(amount)
+    this.updateChips(amount, seatToPostBigBlind)
+    this.visualizeBet(amount, seatToPostBigBlind)
+    this.displayComment('BIG BLIND', username, seatToPostBigBlind)
   }
 
   fold (username) {
@@ -230,6 +327,8 @@ class ReplayService {
     var amount = parseInt(data[1])
     var seatToBet = this.getSeat(username)
     this.updatePot(amount)
+    this.updateChips(amount, seatToBet)
+    this.visualizeBet(amount, seatToBet)
     this.displayComment('BET', username, seatToBet)
   }
 
@@ -238,6 +337,8 @@ class ReplayService {
     var amount = parseInt(data[1])
     var seatToCall = this.getSeat(username)
     this.updatePot(amount)
+    this.updateChips(amount, seatToCall)
+    this.visualizeBet(amount, seatToCall)
     this.displayComment('CALL', username, seatToCall)
   }
 
@@ -249,8 +350,11 @@ class ReplayService {
   raise (data) {
     var username = data[0]
     var raised = parseInt(data[1])
+    var totalAmount = parseInt(data[2])
     var seatToRaise = this.getSeat(username)
     this.updatePot(raised)
+    this.updateChips(raised, seatToRaise)
+    this.visualizeBet(totalAmount, seatToRaise)
     this.displayComment('RAISE', username, seatToRaise)
   }
 
@@ -287,6 +391,7 @@ class ReplayService {
   }
 
   showFlop () {
+    this.potService.collectBets()
     var card1 = document.getElementById('flop1')
     var card2 = document.getElementById('flop2')
     var card3 = document.getElementById('flop3')
@@ -314,6 +419,7 @@ class ReplayService {
   }
 
   showTurn () {
+    this.potService.collectBets()
     var turnCardElement = document.getElementById('turn')
     turnCardElement.setAttribute('visibility', 'visible')
     var matches = this.handHistory.match('TURN.+')[0].match('\\[([2-9]|[AKQJT])[schd]\\]')[0]
@@ -329,6 +435,7 @@ class ReplayService {
   }
 
   showRiver () {
+    this.potService.collectBets()
     var riverCardElement = document.getElementById('river')
     riverCardElement.setAttribute('visibility', 'visible')
     var matches = this.handHistory.match('RIVER.+')[0].match('\\[([2-9]|[AKQJT])[schd]\\]')[0]
@@ -388,7 +495,14 @@ class ReplayService {
     setTimeout(function () {
       actionText.textContent = username
       nextButton.removeAttribute('disabled')
-    }, 1000)
+    }, 500)
+  }
+
+  updateChips (amount, element) {
+    var chipsElement = element.getElementById('playerChips')
+    var chips = parseInt(chipsElement.textContent)
+    chips -= amount
+    chipsElement.textContent = chips
   }
 
   getSeat (username) {
@@ -407,6 +521,12 @@ class ReplayService {
     return new Promise((resolve) => {
       setTimeout(() => resolve(), time)
     })
+  }
+
+  clearBets () {
+    for (const element of document.getElementsByClassName('betInfo')) {
+      element.remove()
+    }
   }
 }
 
