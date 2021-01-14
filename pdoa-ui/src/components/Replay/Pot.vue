@@ -1,6 +1,6 @@
 <template>
   <svg>
-    <text id="potInfo" fill="black" stroke-width="1" stroke="DarkSlateGray" font-size="20" y="35%" x="45%">Pot: 0</text>
+    <text id="potInfo" class="chipAmount" font-size="20" y="35%" x="45%">Pot: 0</text>
     <svg id="pot" x="3%">
       <g id="100000" transform="translate(520, 335)">
       </g>
@@ -15,7 +15,3 @@
     </svg>
   </svg>
 </template>
-<script>
-export default {
-}
-</script>

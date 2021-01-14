@@ -19,9 +19,12 @@ exports.getChipsFor = function (amount) {
 }
 
 exports.collectBets = function () {
-  while (document.getElementsByClassName('chipInfo').length > 0) {
-    document.getElementsByClassName('chipInfo')[0].remove()
+  this.clearChips(document)
+
+  while (document.getElementsByClassName('chipDetails').length > 0) {
+    document.getElementsByClassName('chipDetails')[0].remove()
   }
+
   var potElement = document.getElementById('pot')
   var chipPile = exports.getChipsFor(parseInt(document.getElementById('potInfo').textContent.split(' ')[1]))
   for (const chipNominal of chipPile) {
@@ -38,4 +41,10 @@ exports.collectBets = function () {
     groupDiffY[i] += 5
   }
   groupDiffY = groupDiffY.map(x => 0)
+}
+
+exports.clearChips = function (element) {
+  while (element.getElementsByClassName('chipInfo').length > 0) {
+    element.getElementsByClassName('chipInfo')[0].remove()
+  }
 }

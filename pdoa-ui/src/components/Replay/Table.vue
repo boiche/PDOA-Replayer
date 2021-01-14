@@ -64,7 +64,6 @@ export default {
       dealerUsername = dealerUsername.substring(3, dealerUsername.length - 3)
       var dealerSeat = this.usernames.indexOf(dealerUsername) + 1
       var seat = document.getElementById('seat' + dealerSeat)
-      console.log(dealerSeat)
       switch (dealerSeat) {
         case 1:
           button.setAttribute('x', seat.getBoundingClientRect().x)
@@ -144,7 +143,7 @@ export default {
 
     this.playerInitialSeat = a.handHistory.handHistory.match('Seat \\d: ' + a.username)[0].substr(5, 1)
     this.setButtonCoords(a.handHistory.handHistory)
-    ReplayService.populateSteps(a.handHistory.handHistory, this.usernames)
+    ReplayService.populateSteps(a.handHistory.handHistory, this.usernames, this.chips)
   }
 }
 </script>

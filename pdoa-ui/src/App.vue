@@ -60,4 +60,27 @@ footer {
   background-color: black;
   cursor: pointer;
 }
+
+.chipAmount {
+  fill: black;
+  stroke-width: 1;
+  stroke: DarkSlateGray;
+  font-size: 20
+}
+
+.betAmount {
+  fill: white;
+  stroke: white;
+  stroke-width: 1;
+}
+
+.chipsBackground {
+  fill: black;
+  rx: 35px;
+  ry: 35px;
+}
+
+.playerChipsOnTableInfo {
+  opacity: 0.6
+}
 </style>
