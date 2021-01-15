@@ -35,7 +35,6 @@ export default {
     }
   },
   async created () {
-    console.log(this.getId() + ' of URL ' + location.pathname)
     this.handHistory = await HandService.getHandHistory(this.getId())
     this.username = this.handHistory.username
     this.gameName = this.handHistory.handHistory.handHistory.match('(Tournament.+\\))|(Hold\'em.+\\))')[0].toString()

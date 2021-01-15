@@ -1,6 +1,5 @@
 class ReplayService {
   potService = require('./potService')
-  pot = 0
   actions = []
   currentActionIndex = 0
   handHistory = ''
@@ -10,7 +9,8 @@ class ReplayService {
   chips = []
   actionPattern = '.+: (folds|calls|checks|raises|bets)( \\$?\\d+(\\.\\d{2})( to \\$?\\d+(\\.\\d{2}))?)?'
   showdownActionPattern = '.+: (shows|mucks) (\\[.+\\]|hand)'
-  darkBetPattern = '.+: posts (the )?(ante|(small blind)|(big blind)) \\$?\\d+(\\.\\d{2})'
+  blindsPattern = '.+: posts ((small blind)|(big blind)) \\$?\\d+(\\.\\d{2})?'
+  antesPattern = '.+: posts the ante \\$?\\d+(\\.\\d{2})?'
   svgNS = 'http://www.w3.org/2000/svg'
   playing = false
   currentActionIndex = 0
@@ -27,11 +27,15 @@ class ReplayService {
     this.potInfoElement = document.getElementById('potInfo')
     this.potElement = document.getElementById('pot')
     this.tableElement = document.getElementById('table')
+    this.potService.reset()
   }
 
   populateSteps (handHistory, usernames, chips) {
     this.initializeReplay(handHistory, usernames, chips)
-    this.visualizeDarkBets()
+    if (this.handHistory.match(this.antesPattern)) {
+      this.actions.push({ method: this.postAntes, params: null })
+    }
+    this.visualizeBlinds()
     var toContinue = this.visualizePreflopAction()
     if (toContinue) {
       this.actions.push({ method: this.showFlop, params: null })
@@ -43,13 +47,13 @@ class ReplayService {
           this.actions.push({ method: this.showRiver, params: null })
           toContinue = this.visualizeRiverAction()
           if (toContinue) {
+            this.actions.push({ method: this.potService.collectBets, params: null })
             this.visualizeShowDown()
           }
         }
       }
     }
     this.actions.push({ method: this.showWinners, params: null })
-    console.log(this.actions)
   }
 
   async playAll () {
@@ -79,18 +83,16 @@ class ReplayService {
     this.currentActionIndex++
   }
 
-  visualizeDarkBets () {
-    var matches = this.handHistory.matchAll(this.darkBetPattern)
+  visualizeBlinds () {
+    var matches = this.handHistory.matchAll(this.blindsPattern)
     for (const match of matches) {
-      match[0] = match[0].replace('the ', '').replace('blind ', '')
       var actionDetails = match[0].split(' ')
       var username = actionDetails[0].replace(':', '')
       var action = actionDetails[2]
-      var amount = actionDetails[3]
+      var amount = actionDetails[4]
       switch (action) {
         case 'big': this.actions.push({ method: this.bigBlind, params: [username, amount] }); break
         case 'small': this.actions.push({ method: this.smallBlind, params: [username, amount] }); break
-        case 'ante': this.actions.push({ method: this.ante, params: [username, amount] }); break
       }
     }
   }
@@ -113,17 +115,17 @@ class ReplayService {
       var currentAction = this.handActions[i]
       if (currentAction.match(this.actionPattern)) {
         var actionDetails = currentAction.split(' ')
-        actionDetails[0] = actionDetails[0].replace(':', '') // username
+        var username = actionDetails[0].replace(':', '') // username
         switch (actionDetails[1]) {
-          case 'folds': this.actions.push({ method: this.fold, params: actionDetails[0] }); break
-          case 'calls': this.actions.push({ method: this.call, params: [actionDetails[0], actionDetails[2]] }); break
-          case 'checks': this.actions.push({ method: this.check, params: actionDetails[0] }); break
-          case 'raises': this.actions.push({ method: this.raise, params: [actionDetails[0], actionDetails[2], actionDetails[4]] })
+          case 'folds': this.actions.push({ method: this.fold, params: username }); break
+          case 'calls': this.actions.push({ method: this.call, params: [username, actionDetails[2]] }); break
+          case 'checks': this.actions.push({ method: this.check, params: username }); break
+          case 'raises': this.actions.push({ method: this.raise, params: [username, actionDetails[2], actionDetails[4]] })
         }
       } else {
         actionDetails = currentAction.split(' ')
         if (actionDetails[0] === 'Uncalled') {
-          var username = actionDetails[5]
+          username = actionDetails[5]
           var amount = parseFloat(actionDetails[2].replace('(', '').replace(')', '').replace('$', ''))
           this.actions.push({ method: this.uncalledBet, params: [username, amount] })
         }
@@ -271,14 +273,14 @@ class ReplayService {
       group.setAttribute('class', 'chipDetails')
       this.tableElement.appendChild(group)
       if (action === 'raise') {
-        this.updatePot(amount)
+        this.potService.updatePot(amount, this.potInfoElement)
         this.updateChips(amount, element)
       }
     } else {
       if (group.childNodes.length > 0) {
         var chipsAmount = 0
         for (const chipImage of group.querySelectorAll('image')) {
-          var chipNominal = parseFloat(chipImage.getAttribute('href').match('\\/\\d+(\\.\\d{2})?')[0].replace('/', ''))
+          var chipNominal = Math.floor(parseFloat(chipImage.getAttribute('href').match('\\/\\d+(\\.\\d{2})?')[0].replace('/', '')))
           chipsAmount += chipNominal
         }
         // remove previous chips stack and amount
@@ -288,10 +290,10 @@ class ReplayService {
         if (action === 'call') {
           amount += chipsAmount
         } else if (action === 'raise') {
-          this.updatePot(amount - chipsAmount)
+          this.potService.updatePot(amount - chipsAmount, this.potInfoElement)
           this.updateChips(amount - chipsAmount, element)
         } else if (action === 'uncalledBet') {
-          this.updatePot(-amount)
+          this.potService.updatePot(-amount, this.potInfoElement)
           this.updateChips(-amount, element)
           amount = chipsAmount - amount
         }
@@ -374,29 +376,27 @@ class ReplayService {
     }
   }
 
-  updatePot (amount) {
-    this.pot += amount
-    if (amount % 1 !== 0) {
-      this.potInfoElement.textContent = 'Pot: $' + this.pot.toFixed(2)
-    } else {
-      this.potInfoElement.textContent = 'Pot: ' + this.pot
+  postAntes () {
+    var matches = this.handHistory.matchAll(this.antesPattern)
+    var totalAnteAmount = 0
+    for (const match of matches) {
+      var anteDetails = match[0].split(' ')
+      var username = anteDetails[0].replace(':', '')
+      var anteAmount = parseFloat(anteDetails[4].replace('$', ''))
+      var seatToPostAnte = this.getSeat(username)
+      totalAnteAmount += anteAmount
+      this.updateChips(anteAmount, seatToPostAnte)
+      this.displayComment('ANTE', username, seatToPostAnte)
     }
-  }
-
-  ante (data) {
-    var username = data[0]
-    var amount = parseFloat(data[1])
-    var seatToPostAnte = this.getSeat(username)
-    this.updatePot(amount)
-    this.updateChips(amount, seatToPostAnte)
-    this.displayComment('ANTE', username, seatToPostAnte)
+    this.potService.updatePot(totalAnteAmount, this.potInfoElement)
+    this.potService.collectBets()
   }
 
   smallBlind (data) {
     var username = data[0]
     var amount = parseFloat(data[1].replace('$', ''))
     var seatToPostSmallBlind = this.getSeat(username)
-    this.updatePot(amount)
+    this.potService.updatePot(amount, this.potInfoElement)
     this.updateChips(amount, seatToPostSmallBlind)
     this.visualizeChipsOnTable(amount, seatToPostSmallBlind, 'smallBlind')
     this.displayComment('SMALL BLIND', username, seatToPostSmallBlind)
@@ -406,7 +406,7 @@ class ReplayService {
     var username = data[0]
     var amount = parseFloat(data[1].replace('$', ''))
     var seatToPostBigBlind = this.getSeat(username)
-    this.updatePot(amount)
+    this.potService.updatePot(amount, this.potInfoElement)
     this.updateChips(amount, seatToPostBigBlind)
     this.visualizeChipsOnTable(amount, seatToPostBigBlind, 'bigBlind')
     this.displayComment('BIG BLIND', username, seatToPostBigBlind)
@@ -425,7 +425,7 @@ class ReplayService {
     var username = data[0]
     var amount = parseFloat(data[1].replace('$', ''))
     var seatToBet = this.getSeat(username)
-    this.updatePot(amount)
+    this.potService.updatePot(amount, this.potInfoElement)
     this.updateChips(amount, seatToBet)
     this.visualizeChipsOnTable(amount, seatToBet, 'bet')
     this.displayComment('BET', username, seatToBet)
@@ -435,7 +435,7 @@ class ReplayService {
     var username = data[0]
     var amount = parseFloat(data[1].replace('$', ''))
     var seatToCall = this.getSeat(username)
-    this.updatePot(amount)
+    this.potService.updatePot(amount, this.potInfoElement)
     this.updateChips(amount, seatToCall)
     this.visualizeChipsOnTable(amount, seatToCall, 'call')
     this.displayComment('CALL', username, seatToCall)
@@ -488,7 +488,7 @@ class ReplayService {
 
   uncalledBet (data) {
     var username = data[0]
-    var amount = parseFloat(data[1].replace('$', ''))
+    var amount = data[1]
     var seatToReturn = this.getSeat(username)
     this.visualizeChipsOnTable(amount, seatToReturn, 'uncalledBet')
   }
@@ -555,19 +555,22 @@ class ReplayService {
 
   showWinners () {
     var winners = this.handHistory.matchAll('.+ collected \\$?\\d+(\\.\\d{2})?')
-    for (const winner of winners) {
-      console.log(winner[0].split(' '))
-      var winnerUsername = winner[0].split(' ')[0]
-      var amount = parseFloat(winner[0].split(' ')[2].replace('$', ''))
-      var seatToWin = this.getSeat(winnerUsername)
-      this.visualizeChipsOnTable(amount, seatToWin, 'win')
-      this.displayComment('WIN', winnerUsername, seatToWin)
+    var winnersChips = this.potService.distributeWinnersChips(winners)
+    var totalWinnings = 0
+    for (const winner of winnersChips) {
+      var seatToWin = this.getSeat(winner.username)
+      this.visualizeChipsOnTable(winner.amount, seatToWin, 'win')
+      totalWinnings += winner.amount
+      this.displayComment('WIN', winner.username, seatToWin)
     }
+
+    // remove chips of the pot
     for (const potGroup of document.getElementById('pot').querySelectorAll('g')) {
       while (potGroup.firstChild) {
         potGroup.firstChild.remove()
       }
     }
+    this.potService.updatePot(-totalWinnings, this.potInfoElement)
   }
 
   gatherPlayersData (handHistory, playerUsername, seats) {
@@ -637,7 +640,7 @@ class ReplayService {
   getSeat (username) {
     var seatToAct
     for (const seat of this.seats) {
-      if (seat.textContent.includes(username)) {
+      if (Object.values(seat)[1].username === username) {
         seatToAct = seat
         break
       }

@@ -40,7 +40,7 @@ public class HandsController {
         newHand.setHandHistory(request.getHand());
         newHand.setUploaded(calendar.getTime());
 
-        return repository.saveAndFlush(newHand);
+        return repository.save(newHand);
     }
 
     @GetMapping(path = "/all")
