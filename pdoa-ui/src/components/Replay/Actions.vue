@@ -1,8 +1,9 @@
 <template>
   <div class="actions">
     <div class="btn btn-optional" v-on:click="prev">Prev</div>
-    <div class="btn btn-primary" v-if="playing" v-on:click="pause()">Pause</div>
-    <div class="btn btn-secondary" v-else v-on:click="play()">Play</div>
+    <div class="btn btn-primary" v-if="playing&&!finished" v-on:click="pause()">Pause</div>
+    <div class="btn btn-secondary" v-if="!playing&&!finished" v-on:click="play()">Play</div>
+    <div class="btn btn-primary" v-if="finished" v-on:click="replay()">Replay</div>
     <button id="nextButton" class="btn btn-optional" v-on:click="next">Next</button>
   </div>
 </template>
@@ -11,23 +12,29 @@ import ReplayService from '@/services/replayService.js'
 export default {
   data () {
     return {
-      playing: false
+      playing: false,
+      finished: false
     }
   },
   methods: {
     next () {
-      ReplayService.playCurrent()
+      ReplayService.playCurrent(this)
     },
     prev () {
-      ReplayService.playCurrent()
+      ReplayService.playCurrent(this)
     },
     play () {
-      ReplayService.playAll()
       this.playing = true
+      ReplayService.playAll(this)
     },
     pause () {
       ReplayService.pause()
       this.playing = false
+    },
+    replay () {
+      this.finished = false
+      ReplayService.reset()
+      this.play()
     }
   }
 }

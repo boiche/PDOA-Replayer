@@ -17,21 +17,95 @@ class ReplayService {
   potElement
   potInfoElement
   tableElement
+  initialData
+  tableComponent
 
-  initializeReplay (handHistory, usernames, chips) {
-    this.handHistory = handHistory
+  initializeReplay (hand, caller) {
+    this.tableComponent = caller
+    this.initialData = hand
+    this.handHistory = hand.handHistory.handHistory
     this.handActions = this.handHistory.split('\n')
     this.seats = document.getElementsByClassName('playerSeat')
-    this.usernames = usernames
-    this.chips = chips
+    var playersData = this.gatherPlayersData(this.handHistory, hand.username, hand.seats)
+    this.usernames = playersData[0][0]
+    this.chips = playersData[1][0]
     this.potInfoElement = document.getElementById('potInfo')
     this.potElement = document.getElementById('pot')
     this.tableElement = document.getElementById('table')
     this.potService.reset()
+    this.setButtonCoords()
+    this.dealPlayerCards(caller)
+    this.hideUnseated()
   }
 
-  populateSteps (handHistory, usernames, chips) {
-    this.initializeReplay(handHistory, usernames, chips)
+  hideUnseated () {
+    if (this.initialData.seats < 9) {
+      for (var i = this.initialData.seats + 1; i <= 9; i++) {
+        var seat = document.getElementById('seat' + i)
+        for (const image of seat.querySelectorAll('image')) {
+          image.setAttribute('visibility', 'hidden')
+        }
+        seat.setAttribute('visibility', 'hidden')
+      }
+    }
+  }
+
+  dealPlayerCards (caller) {
+    var playersHoleCards = this.handHistory.match('Dealt to .+')
+    if (playersHoleCards) {
+      var playersHoleCardsDetails = playersHoleCards[0].split(' ')
+      this.playerInitialSeat = this.handHistory.match('Seat \\d: ' + this.initialData.username)[0].substr(5, 1)
+
+      var firstCard = playersHoleCardsDetails[3].replace('[', '')
+      firstCard = firstCard.toUpperCase()
+      var suit = firstCard[1]
+      switch (suit.toUpperCase()) {
+        case 'S': caller.playersFirstSuit = 'spades'; break
+        case 'C': caller.playersFirstSuit = 'clubs'; break
+        case 'H': caller.playersFirstSuit = 'hearts'; break
+        case 'D': caller.playersFirstSuit = 'diamonds'; break
+      }
+      caller.playersFirstCard = firstCard
+
+      var secondCard = playersHoleCardsDetails[4].replace(']', '')
+      secondCard = secondCard.toUpperCase()
+      suit = secondCard[1]
+      switch (suit.toUpperCase()) {
+        case 'S': caller.playersSecondSuit = 'spades'; break
+        case 'C': caller.playersSecondSuit = 'clubs'; break
+        case 'H': caller.playersSecondSuit = 'hearts'; break
+        case 'D': caller.playersSecondSuit = 'diamonds'; break
+      }
+      caller.playersSecondCard = secondCard
+    }
+  }
+
+  resetStacks () {
+    for (var i = 0; i < this.initialData.seats; i++) {
+      var currentUsername = this.usernames[i]
+      if (currentUsername === '') {
+        continue
+      }
+      var seat = this.getSeat(currentUsername)
+      seat.querySelector('text.playerChips').textContent = this.chips[i]
+    }
+  }
+
+  hideHoleCards () {
+    for (const card of document.querySelectorAll('image.holeCard')) {
+      card.setAttribute('href', require('@/assets/cards/backs/2B.svg'))
+      card.setAttribute('visibility', 'visible')
+    }
+  }
+
+  clearBoard () {
+    for (const card of document.querySelectorAll('image.communityCard')) {
+      card.setAttribute('visibility', 'hidden')
+    }
+  }
+
+  populateSteps (hand, caller) {
+    this.initializeReplay(hand, caller)
     if (this.handHistory.match(this.antesPattern)) {
       this.actions.push({ method: this.postAntes, params: null })
     }
@@ -56,7 +130,7 @@ class ReplayService {
     this.actions.push({ method: this.showWinners, params: null })
   }
 
-  async playAll () {
+  async playAll (caller) {
     this.playing = true
     for (var i = this.currentActionIndex; i < this.actions.length; i++) {
       if (this.playing) {
@@ -68,14 +142,32 @@ class ReplayService {
       }
       this.currentActionIndex = i + 1
     }
+
+    caller.finished = true
+  }
+
+  reset () {
+    this.currentActionIndex = 0
+    this.hideHoleCards()
+    this.resetStacks()
+    this.clearBoard()
+    this.removePlayersBetGroups()
+    this.initializeReplay(this.initialData, this.tableComponent)
+  }
+
+  removePlayersBetGroups () {
+    for (const group of document.querySelectorAll('g.chipDetails')) {
+      group.remove()
+    }
   }
 
   pause () {
     this.playing = false
   }
 
-  playCurrent () {
+  playCurrent (caller) {
     if (this.currentActionIndex >= this.actions.length) {
+      caller.finished = true
       return
     }
     var functionToCall = this.actions[this.currentActionIndex]
@@ -146,7 +238,6 @@ class ReplayService {
       flopEndIndex = this.handActions.indexOf(turnData[0])
     }
     var flopIndex = this.handActions.indexOf(this.handHistory.match('\\*\\*\\* FLOP \\*\\*\\*.+')[0]) + 1
-    this.clearBets()
     for (var i = flopIndex; i < flopEndIndex; i++) {
       var currentAction = this.handActions[i]
       if (currentAction.match(this.actionPattern)) {
@@ -238,7 +329,7 @@ class ReplayService {
         actionDetails = currentAction.split(' ')
         if (actionDetails[0] === 'Uncalled') {
           var username = actionDetails[5]
-          var amount = actionDetails[2].replace('(', '').replace(')', '')
+          var amount = parseFloat(actionDetails[2].replace('(', '').replace(')', '').replace('$', ''))
           this.actions.push({ method: this.uncalledBet, params: [username, amount] })
         }
       }
@@ -280,9 +371,13 @@ class ReplayService {
       if (group.childNodes.length > 0) {
         var chipsAmount = 0
         for (const chipImage of group.querySelectorAll('image')) {
-          var chipNominal = Math.floor(parseFloat(chipImage.getAttribute('href').match('\\/\\d+(\\.\\d{2})?')[0].replace('/', '')))
+          var chipNominal = parseFloat(chipImage.getAttribute('href').match('\\/\\d+(\\.\\d{2})?')[0].replace('/', ''))
+          if (chipNominal >= 1) {
+            chipNominal = Math.floor(chipNominal)
+          }
           chipsAmount += chipNominal
         }
+
         // remove previous chips stack and amount
         group.querySelector('g.playerChipsOnTableInfo').remove()
         this.potService.clearChips(group)
@@ -574,14 +669,18 @@ class ReplayService {
   }
 
   gatherPlayersData (handHistory, playerUsername, seats) {
-    var matches = handHistory.matchAll('Seat \\d: [^ ]+ \\(\\$?\\d+\\.?\\d*')
+    var matches = handHistory.matchAll('Seat \\d: .+(?<!collected) \\(\\$?\\d+(\\.?\\d{2})?')
     var emptySeats = [1, 8, 6, 3, 5, 4, 7] // indexes where name must be empty depending on empty seats count
     var beforePlayer = []
     var afterPlayer = []
     var beforePlayerChips = []
     var afterPlayerChips = []
     var foundPlayer = false
+    var iterations = 0
     for (const match of matches) {
+      if (iterations >= this.initialData.seats) {
+        break
+      }
       var current = match[0].substring(8, match[0].indexOf('(') - 1)
       var currentChips = match[0].substring(match[0].indexOf('(') + 1)
       if (current === playerUsername) {
@@ -597,6 +696,7 @@ class ReplayService {
         beforePlayer.push(current)
         beforePlayerChips.push(currentChips)
       }
+      iterations++
     }
     var result = [[], []]
     var resultUsernames = afterPlayer.concat(beforePlayer)
@@ -622,7 +722,7 @@ class ReplayService {
   }
 
   updateChips (amount, element) {
-    var chipsElement = element.getElementById('playerChips')
+    var chipsElement = element.querySelector('text.playerChips')
     var chips = parseFloat(chipsElement.textContent.replace('$', ''))
     if (Object.is(chips, NaN)) chips = 0
     chips -= amount
@@ -640,7 +740,7 @@ class ReplayService {
   getSeat (username) {
     var seatToAct
     for (const seat of this.seats) {
-      if (Object.values(seat)[1].username === username) {
+      if (seat.querySelector('text').textContent === username) {
         seatToAct = seat
         break
       }
@@ -655,9 +755,51 @@ class ReplayService {
     })
   }
 
-  clearBets () {
-    for (const element of document.getElementsByClassName('betInfo')) {
-      element.remove()
+  setButtonCoords () {
+    var seatOrder = [1, 9, 2, 6, 4, 5, 7, 3, 8]
+    var button = document.getElementById('button')
+    var seatId = this.handHistory.match('#\\d is the button')[0][1]
+    var dealerUsername = this.handHistory.match('Seat ' + seatId + ': .+ \\((\\$|\\d)')[0]
+    dealerUsername = dealerUsername.substring(dealerUsername.indexOf(':') + 2, dealerUsername.indexOf('(') - 1)
+    var dealerSeatId = seatOrder[this.usernames.indexOf(dealerUsername)]
+    var seat = document.getElementById('seat' + dealerSeatId)
+    switch (dealerSeatId) {
+      case 1:
+        button.setAttribute('x', seat.getBoundingClientRect().x)
+        button.setAttribute('y', seat.getBoundingClientRect().y * 0.67)
+        break
+      case 2:
+        button.setAttribute('x', seat.getBoundingClientRect().x * 2.25)
+        button.setAttribute('y', seat.getBoundingClientRect().y * 0.8)
+        break
+      case 3:
+        button.setAttribute('x', seat.getBoundingClientRect().x * 0.87)
+        button.setAttribute('y', seat.getBoundingClientRect().y * 0.8)
+        break
+      case 4:
+        button.setAttribute('x', seat.getBoundingClientRect().x)
+        button.setAttribute('y', seat.getBoundingClientRect().y * 0.9)
+        break
+      case 5:
+        button.setAttribute('x', seat.getBoundingClientRect().x)
+        button.setAttribute('y', seat.getBoundingClientRect().y * 0.9)
+        break
+      case 6:
+        button.setAttribute('x', seat.getBoundingClientRect().x * 1.5)
+        button.setAttribute('y', seat.getBoundingClientRect().y)
+        break
+      case 7:
+        button.setAttribute('x', seat.getBoundingClientRect().x * 0.9)
+        button.setAttribute('y', seat.getBoundingClientRect().y)
+        break
+      case 8:
+        button.setAttribute('x', seat.getBoundingClientRect().x * 0.85)
+        button.setAttribute('y', seat.getBoundingClientRect().y - seat.getBoundingClientRect().height * 1.5)
+        break
+      case 9:
+        button.setAttribute('x', seat.getBoundingClientRect().x * 1.75)
+        button.setAttribute('y', seat.getBoundingClientRect().y - seat.getBoundingClientRect().height * 1.1)
+        break
     }
   }
 }

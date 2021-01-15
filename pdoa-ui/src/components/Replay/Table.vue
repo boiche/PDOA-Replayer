@@ -56,96 +56,14 @@ export default {
         id += location.pathname[i]
       }
       return id
-    },
-    setButtonCoords (handHistory) {
-      var button = document.getElementById('button')
-      var seatId = handHistory.match('#\\d is the button')[0][1]
-      var dealerUsername = handHistory.match(seatId + ': [^ ]+ \\((\\$|\\d)')[0]
-      dealerUsername = dealerUsername.substring(3, dealerUsername.length - 3)
-      var dealerSeat = this.usernames.indexOf(dealerUsername) + 1
-      var seat = document.getElementById('seat' + dealerSeat)
-      switch (dealerSeat) {
-        case 1:
-          button.setAttribute('x', seat.getBoundingClientRect().x)
-          button.setAttribute('y', seat.getBoundingClientRect().y * 0.67)
-          break
-        case 2:
-          button.setAttribute('x', seat.getBoundingClientRect().x * 2.25)
-          button.setAttribute('y', seat.getBoundingClientRect().y * 0.8)
-          break
-        case 3:
-          button.setAttribute('x', seat.getBoundingClientRect().x * 0.87)
-          button.setAttribute('y', seat.getBoundingClientRect().y * 0.8)
-          break
-        case 4:
-          button.setAttribute('x', seat.getBoundingClientRect().x)
-          button.setAttribute('y', seat.getBoundingClientRect().y * 0.9)
-          break
-        case 5:
-          button.setAttribute('x', seat.getBoundingClientRect().x)
-          button.setAttribute('y', seat.getBoundingClientRect().y * 0.9)
-          break
-        case 6:
-          button.setAttribute('x', seat.getBoundingClientRect().x * 1.5)
-          button.setAttribute('y', seat.getBoundingClientRect().y)
-          break
-        case 7:
-          button.setAttribute('x', seat.getBoundingClientRect().x * 0.9)
-          button.setAttribute('y', seat.getBoundingClientRect().y)
-          break
-        case 8:
-          button.setAttribute('x', seat.getBoundingClientRect().x * 0.85)
-          button.setAttribute('y', seat.getBoundingClientRect().y - seat.getBoundingClientRect().height * 1.5)
-          break
-        case 9:
-          button.setAttribute('x', seat.getBoundingClientRect().x * 1.75)
-          button.setAttribute('y', seat.getBoundingClientRect().y - seat.getBoundingClientRect().height * 1.1)
-          break
-      }
     }
   },
   async mounted () {
     var a = await HandService.getHandHistory(this.getId())
-    if (a.seats < 9) {
-      for (var i = a.seats + 1; i <= 9; i++) {
-        document.getElementById('seat' + i).setAttribute('visibility', 'hidden')
-      }
-    }
 
-    var playersHoleCards = a.handHistory.handHistory.match('Dealt to .+')
-    if (playersHoleCards) {
-      var playersHoleCardsDetails = playersHoleCards[0].split(' ')
-      this.playerInitialSeat = a.handHistory.handHistory.match('Seat \\d: ' + a.username)[0].substr(5, 1)
-
-      var firstCard = playersHoleCardsDetails[3].replace('[', '')
-      firstCard = firstCard.toUpperCase()
-      var suit = firstCard[1]
-      switch (suit.toUpperCase()) {
-        case 'S': this.playersFirstSuit = 'spades'; break
-        case 'C': this.playersFirstSuit = 'clubs'; break
-        case 'H': this.playersFirstSuit = 'hearts'; break
-        case 'D': this.playersFirstSuit = 'diamonds'; break
-      }
-      this.playersFirstCard = firstCard
-
-      var secondCard = playersHoleCardsDetails[4].replace(']', '')
-      secondCard = secondCard.toUpperCase()
-      suit = secondCard[1]
-      switch (suit.toUpperCase()) {
-        case 'S': this.playersSecondSuit = 'spades'; break
-        case 'C': this.playersSecondSuit = 'clubs'; break
-        case 'H': this.playersSecondSuit = 'hearts'; break
-        case 'D': this.playersSecondSuit = 'diamonds'; break
-      }
-      this.playersSecondCard = secondCard
-    }
-
-    var playersData = ReplayService.gatherPlayersData(a.handHistory.handHistory, a.username, a.seats)
-    this.usernames = playersData[0][0]
-    this.chips = playersData[1][0]
-
-    this.setButtonCoords(a.handHistory.handHistory)
-    ReplayService.populateSteps(a.handHistory.handHistory, this.usernames, this.chips)
+    ReplayService.populateSteps(a, this)
+    this.usernames = ReplayService.usernames
+    this.chips = ReplayService.chips
   }
 }
 </script>

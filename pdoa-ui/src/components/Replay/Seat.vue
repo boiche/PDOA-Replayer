@@ -3,8 +3,8 @@
     <image class="card holeCard" x="0" :href="require('../../assets/cards/' + firstSuit + '/' + firstCard + '.svg')" width="50%" height="100%"></image>
     <image class="card holeCard" x="50%" :href="require('../../assets/cards/' + secondSuit + '/' + secondCard + '.svg')" width="50%" height="100%"></image>
     <rect y="52%" x="2" width="98.1%" height="46%" style="fill:gray;stroke:black;stroke-width:5"></rect>
-    <text id="playerUsername" y="70%" x="35%" fill="white">{{username}}</text>
-    <text id="playerChips" y="87%" x="40%" fill="white">{{chips}}</text>
+    <text class="playerUsername" y="70%" x="35%" fill="white">{{username}}</text>
+    <text class="playerChips" y="87%" x="40%" fill="white">{{chips}}</text>
   </svg>
 </template>
 <script>
