@@ -26,7 +26,7 @@ exports.collectBets = function () {
   }
 
   var potElement = document.getElementById('pot')
-  var chipPile = exports.getChipsFor(parseInt(document.getElementById('potInfo').textContent.split(' ')[1]))
+  var chipPile = exports.getChipsFor(parseFloat(document.getElementById('potInfo').textContent.replace('$', '').split(' ')[1]))
   for (const chipNominal of chipPile) {
     var potChip = document.createElementNS('http://www.w3.org/2000/svg', 'image')
     potChip.setAttribute('href', require('@/assets/chips/' + chipNominal + '.svg'))

@@ -4,14 +4,13 @@
     <div id="input" class="row">
       <div class="col-2"></div>
       <div class="col-8">
-        <textarea id="handInput" placeholder="Place your hand history here"></textarea>
+        <textarea v-on:input="validate()" id="handInput" placeholder="Place your hand history here"></textarea>
       </div>
     </div>
-    <form>
-      <router-link to="/replay/:id" class="m-2">
-        <button type="submit" class="btn btn-success" v-on:click="upload">Upload</button>
-      </router-link>
-    </form>
+    <div class="btn btn-success m-2" v-on:click="upload()">Upload</div>
+    <div>
+      {{message}}
+    </div>
   </div>
 </template>
 <script>
@@ -20,14 +19,31 @@ import HandService from '../services/handsService.js'
 export default {
   data () {
     return {
+      isValid: false,
+      message: '',
       content: '',
-      id: ''
+      id: '',
+      handPattern: new RegExp('PokerStars Hand #\\d+:.+\\*\\*\\* SUMMARY \\*\\*\\*.+', 's')
     }
   },
   methods: {
     upload () {
-      this.content = document.getElementById('handInput').value
-      HandService.uploadHand(this.content, this.$store.state.auth.user.username)
+      if (this.isValid) {
+        this.content = document.getElementById('handInput').value
+        HandService.uploadHand(this.content, this.$store.state.auth.user.username)
+      } else {
+        this.message = 'abe ne stana be chovek'
+      }
+    },
+    validate () {
+      console.log(document.getElementById('handInput').value.match(this.handPattern))
+      if (document.getElementById('handInput').value.match(this.handPattern)) {
+        this.message = 'stana'
+        this.isValid = true
+      } else {
+        this.isValid = false
+        this.message = 'ne stana'
+      }
     }
   }
 }

@@ -16,11 +16,13 @@ import HandsService from '../services/handsService.js'
 import HandLink from '@/components/HandLink.vue'
 
 export default {
-  name: 'AllRecentHands',
-  mounted: async function () {
-    var a
-    a = await HandsService.getAll()
-    console.log(a)
+  data () {
+    return {
+      allHands: []
+    }
+  },
+  async mounted () {
+    this.allHands = await HandsService.getAll()
   },
   components: {
     HandLink

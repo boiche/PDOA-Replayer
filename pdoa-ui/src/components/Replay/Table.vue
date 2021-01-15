@@ -112,36 +112,38 @@ export default {
       }
     }
 
-    if (a.handHistory.handHistory.match(a.username)[0] !== '') {
-      var playersHand = a.handHistory.handHistory.match('\\[(([2-9]|[AKQJT])[scdh]) (([2-9]|[AKQJT])[scdh])\\]')[0]
-      switch (playersHand[2].toUpperCase()) {
+    var playersHoleCards = a.handHistory.handHistory.match('Dealt to .+')
+    if (playersHoleCards) {
+      var playersHoleCardsDetails = playersHoleCards[0].split(' ')
+      this.playerInitialSeat = a.handHistory.handHistory.match('Seat \\d: ' + a.username)[0].substr(5, 1)
+
+      var firstCard = playersHoleCardsDetails[3].replace('[', '')
+      firstCard = firstCard.toUpperCase()
+      var suit = firstCard[1]
+      switch (suit.toUpperCase()) {
         case 'S': this.playersFirstSuit = 'spades'; break
         case 'C': this.playersFirstSuit = 'clubs'; break
         case 'H': this.playersFirstSuit = 'hearts'; break
         case 'D': this.playersFirstSuit = 'diamonds'; break
       }
-      this.playersFirstCard = playersHand.substr(1, 2).toUpperCase()
+      this.playersFirstCard = firstCard
 
-      switch (playersHand[5].toUpperCase()) {
+      var secondCard = playersHoleCardsDetails[4].replace(']', '')
+      secondCard = secondCard.toUpperCase()
+      suit = secondCard[1]
+      switch (suit.toUpperCase()) {
         case 'S': this.playersSecondSuit = 'spades'; break
         case 'C': this.playersSecondSuit = 'clubs'; break
         case 'H': this.playersSecondSuit = 'hearts'; break
         case 'D': this.playersSecondSuit = 'diamonds'; break
       }
-      this.playersSecondCard = playersHand.substr(4, 2).toUpperCase()
-    } else {
-      this.usernames.push('Player 1')
-      this.playersFirstSuit = 'backs'
-      this.playersFirstCard = '2B'
-      this.playersSecondSuit = 'backs'
-      this.playersSecondCard = '2B'
+      this.playersSecondCard = secondCard
     }
 
     var playersData = ReplayService.gatherPlayersData(a.handHistory.handHistory, a.username, a.seats)
     this.usernames = playersData[0][0]
     this.chips = playersData[1][0]
 
-    this.playerInitialSeat = a.handHistory.handHistory.match('Seat \\d: ' + a.username)[0].substr(5, 1)
     this.setButtonCoords(a.handHistory.handHistory)
     ReplayService.populateSteps(a.handHistory.handHistory, this.usernames, this.chips)
   }

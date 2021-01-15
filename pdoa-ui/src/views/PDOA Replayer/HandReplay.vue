@@ -31,10 +31,11 @@ export default {
       for (var i = location.pathname.lastIndexOf('/') + 1; i < location.pathname.length; i++) {
         id += location.pathname[i]
       }
-      return id
+      return parseInt(id)
     }
   },
   async created () {
+    console.log(this.getId() + ' of URL ' + location.pathname)
     this.handHistory = await HandService.getHandHistory(this.getId())
     this.username = this.handHistory.username
     this.gameName = this.handHistory.handHistory.handHistory.match('(Tournament.+\\))|(Hold\'em.+\\))')[0].toString()

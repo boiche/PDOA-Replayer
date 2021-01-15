@@ -8,9 +8,9 @@ class ReplayService {
   seats = []
   usernames = []
   chips = []
-  actionPattern = '.+: (folds|calls|checks|raises|bets)( \\d+( to \\d+)?)?'
+  actionPattern = '.+: (folds|calls|checks|raises|bets)( \\$?\\d+(\\.\\d{2})( to \\$?\\d+(\\.\\d{2}))?)?'
   showdownActionPattern = '.+: (shows|mucks) (\\[.+\\]|hand)'
-  darkBetPattern = '.+: posts (the )?(ante|(small blind)|(big blind)) \\d+'
+  darkBetPattern = '.+: posts (the )?(ante|(small blind)|(big blind)) \\$?\\d+(\\.\\d{2})'
   svgNS = 'http://www.w3.org/2000/svg'
   playing = false
   currentActionIndex = 0
@@ -48,6 +48,8 @@ class ReplayService {
         }
       }
     }
+    this.actions.push({ method: this.showWinners, params: null })
+    console.log(this.actions)
   }
 
   async playAll () {
@@ -103,7 +105,10 @@ class ReplayService {
     } else {
       preflopEndIndex = this.handActions.indexOf(flopData[0])
     }
-    var preflopIndex = this.handActions.indexOf('*** HOLE CARDS ***') + 2
+    var preflopIndex = this.handActions.indexOf('*** HOLE CARDS ***') + 1
+    if (this.handActions[preflopIndex].startsWith('Dealt')) {
+      preflopIndex++
+    }
     for (var i = preflopIndex; i < preflopEndIndex; i++) {
       var currentAction = this.handActions[i]
       if (currentAction.match(this.actionPattern)) {
@@ -117,10 +122,9 @@ class ReplayService {
         }
       } else {
         actionDetails = currentAction.split(' ')
-        console.log(actionDetails)
         if (actionDetails[0] === 'Uncalled') {
           var username = actionDetails[5]
-          var amount = parseInt(actionDetails[2].replace('(', '').replace(')', ''))
+          var amount = parseFloat(actionDetails[2].replace('(', '').replace(')', '').replace('$', ''))
           this.actions.push({ method: this.uncalledBet, params: [username, amount] })
         }
       }
@@ -154,7 +158,12 @@ class ReplayService {
           case 'bets': this.actions.push({ method: this.bet, params: [actionDetails[0], actionDetails[2]] })
         }
       } else {
-        console.log('flop ' + currentAction)
+        actionDetails = currentAction.split(' ')
+        if (actionDetails[0] === 'Uncalled') {
+          var username = actionDetails[5]
+          var amount = parseFloat(actionDetails[2].replace('(', '').replace(')', '').replace('$', ''))
+          this.actions.push({ method: this.uncalledBet, params: [username, amount] })
+        }
       }
     }
 
@@ -187,7 +196,12 @@ class ReplayService {
           case 'bets': this.actions.push({ method: this.bet, params: [actionDetails[0], actionDetails[2]] }); break
         }
       } else {
-        console.log('turn ' + currentAction)
+        actionDetails = currentAction.split(' ')
+        if (actionDetails[0] === 'Uncalled') {
+          var username = actionDetails[5]
+          var amount = parseFloat(actionDetails[2].replace('(', '').replace(')', '').replace('$', ''))
+          this.actions.push({ method: this.uncalledBet, params: [username, amount] })
+        }
       }
     }
 
@@ -219,7 +233,12 @@ class ReplayService {
           case 'bets': this.actions.push({ method: this.bet, params: [actionDetails[0], actionDetails[2]] }); break
         }
       } else {
-        console.log('river ' + currentAction)
+        actionDetails = currentAction.split(' ')
+        if (actionDetails[0] === 'Uncalled') {
+          var username = actionDetails[5]
+          var amount = actionDetails[2].replace('(', '').replace(')', '')
+          this.actions.push({ method: this.uncalledBet, params: [username, amount] })
+        }
       }
     }
 
@@ -246,7 +265,6 @@ class ReplayService {
 
   visualizeChipsOnTable (amount, element, action) {
     var group = document.getElementById(element.id + 'chips')
-    console.log('group of ' + element.id + ': ' + group)
     if (!group) {
       group = document.createElementNS(this.svgNS, 'g')
       group.setAttribute('id', element.id + 'chips')
@@ -260,9 +278,13 @@ class ReplayService {
       if (group.childNodes.length > 0) {
         var chipsAmount = 0
         for (const chipImage of group.querySelectorAll('image')) {
-          var chipNominal = parseInt(chipImage.getAttribute('href').match('\\/\\d+')[0].replace('/', ''))
+          var chipNominal = parseFloat(chipImage.getAttribute('href').match('\\/\\d+(\\.\\d{2})?')[0].replace('/', ''))
           chipsAmount += chipNominal
         }
+        // remove previous chips stack and amount
+        group.querySelector('g.playerChipsOnTableInfo').remove()
+        this.potService.clearChips(group)
+
         if (action === 'call') {
           amount += chipsAmount
         } else if (action === 'raise') {
@@ -273,10 +295,6 @@ class ReplayService {
           this.updateChips(-amount, element)
           amount = chipsAmount - amount
         }
-
-        // remove previous chips stack and amount
-        this.potService.clearChips(group)
-        group.querySelector('g.playerChipsOnTableInfo').remove()
       }
     }
     var chipPile = this.potService.getChipsFor(amount)
@@ -284,7 +302,6 @@ class ReplayService {
 
     var chipsDetailsGroup = document.createElementNS(this.svgNS, 'g')
     chipsDetailsGroup.setAttribute('class', 'playerChipsOnTableInfo')
-
     for (var i = 0; i < chipPile.length; i++) {
       var chipImage = document.createElementNS(this.svgNS, 'image')
       chipImage.setAttribute('class', 'chipInfo ' + element.id)
@@ -334,31 +351,41 @@ class ReplayService {
     }
     var lowermostChip = group.querySelector('image')
 
-    var chipsAmountText = document.createElementNS(this.svgNS, 'text')
-    var chipsAmountBackground = document.createElementNS(this.svgNS, 'rect')
-    chipsAmountText.textContent = amount
-    chipsAmountText.setAttribute('class', 'betAmount')
-    chipsAmountBackground.setAttribute('class', 'chipsBackground')
+    if (amount > 0) {
+      var chipsAmountText = document.createElementNS(this.svgNS, 'text')
+      var chipsAmountBackground = document.createElementNS(this.svgNS, 'rect')
+      if (amount % 1 !== 0) {
+        chipsAmountText.textContent = '$' + amount.toFixed(2)
+      } else {
+        chipsAmountText.textContent = amount
+      }
+      chipsAmountText.setAttribute('class', 'betAmount')
+      chipsAmountBackground.setAttribute('class', 'chipsBackground')
 
-    chipsDetailsGroup.appendChild(chipsAmountBackground)
-    chipsDetailsGroup.appendChild(chipsAmountText)
-    group.appendChild(chipsDetailsGroup)
+      chipsDetailsGroup.appendChild(chipsAmountBackground)
+      chipsDetailsGroup.appendChild(chipsAmountText)
+      group.appendChild(chipsDetailsGroup)
 
-    chipsAmountBackground.setAttribute('width', chipsAmountText.getBoundingClientRect().width + 10)
-    chipsAmountBackground.setAttribute('height', chipsAmountText.getBoundingClientRect().height + 10)
-    chipsAmountText.setAttribute('y', parseInt(chipsAmountBackground.getBoundingClientRect().height) / 1.5)
-    chipsAmountText.setAttribute('x', (chipsAmountBackground.getAttribute('width') - chipsAmountText.getBoundingClientRect().width) / 2)
-    chipsDetailsGroup.setAttribute('transform', 'translate(' + (parseInt(lowermostChip.getAttribute('x')) - ((parseInt(chipsAmountBackground.getAttribute('width')) - lowermostChip.getBoundingClientRect().width) / 2)) + ', ' + (parseInt(lowermostChip.getAttribute('y')) + parseInt(lowermostChip.getBoundingClientRect().height)) + ')')
+      chipsAmountBackground.setAttribute('width', chipsAmountText.getBoundingClientRect().width + 10)
+      chipsAmountBackground.setAttribute('height', chipsAmountText.getBoundingClientRect().height + 10)
+      chipsAmountText.setAttribute('y', parseInt(chipsAmountBackground.getBoundingClientRect().height) / 1.5)
+      chipsAmountText.setAttribute('x', (chipsAmountBackground.getAttribute('width') - chipsAmountText.getBoundingClientRect().width) / 2)
+      chipsDetailsGroup.setAttribute('transform', 'translate(' + (parseInt(lowermostChip.getAttribute('x')) - ((parseInt(chipsAmountBackground.getAttribute('width')) - lowermostChip.getBoundingClientRect().width) / 2)) + ', ' + (parseInt(lowermostChip.getAttribute('y')) + parseInt(lowermostChip.getBoundingClientRect().height)) + ')')
+    }
   }
 
   updatePot (amount) {
     this.pot += amount
-    this.potInfoElement.textContent = 'Pot: ' + this.pot
+    if (amount % 1 !== 0) {
+      this.potInfoElement.textContent = 'Pot: $' + this.pot.toFixed(2)
+    } else {
+      this.potInfoElement.textContent = 'Pot: ' + this.pot
+    }
   }
 
   ante (data) {
     var username = data[0]
-    var amount = parseInt(data[1])
+    var amount = parseFloat(data[1])
     var seatToPostAnte = this.getSeat(username)
     this.updatePot(amount)
     this.updateChips(amount, seatToPostAnte)
@@ -367,7 +394,7 @@ class ReplayService {
 
   smallBlind (data) {
     var username = data[0]
-    var amount = parseInt(data[1])
+    var amount = parseFloat(data[1].replace('$', ''))
     var seatToPostSmallBlind = this.getSeat(username)
     this.updatePot(amount)
     this.updateChips(amount, seatToPostSmallBlind)
@@ -377,7 +404,7 @@ class ReplayService {
 
   bigBlind (data) {
     var username = data[0]
-    var amount = parseInt(data[1])
+    var amount = parseFloat(data[1].replace('$', ''))
     var seatToPostBigBlind = this.getSeat(username)
     this.updatePot(amount)
     this.updateChips(amount, seatToPostBigBlind)
@@ -396,7 +423,7 @@ class ReplayService {
 
   bet (data) {
     var username = data[0]
-    var amount = parseInt(data[1])
+    var amount = parseFloat(data[1].replace('$', ''))
     var seatToBet = this.getSeat(username)
     this.updatePot(amount)
     this.updateChips(amount, seatToBet)
@@ -406,7 +433,7 @@ class ReplayService {
 
   call (data) {
     var username = data[0]
-    var amount = parseInt(data[1])
+    var amount = parseFloat(data[1].replace('$', ''))
     var seatToCall = this.getSeat(username)
     this.updatePot(amount)
     this.updateChips(amount, seatToCall)
@@ -421,7 +448,7 @@ class ReplayService {
 
   raise (data) {
     var username = data[0]
-    var totalAmount = parseInt(data[2])
+    var totalAmount = parseFloat(data[2].replace('$', ''))
     var seatToRaise = this.getSeat(username)
     this.visualizeChipsOnTable(totalAmount, seatToRaise, 'raise')
     this.displayComment('RAISE', username, seatToRaise)
@@ -461,7 +488,7 @@ class ReplayService {
 
   uncalledBet (data) {
     var username = data[0]
-    var amount = parseInt(data[1])
+    var amount = parseFloat(data[1].replace('$', ''))
     var seatToReturn = this.getSeat(username)
     this.visualizeChipsOnTable(amount, seatToReturn, 'uncalledBet')
   }
@@ -526,6 +553,23 @@ class ReplayService {
     riverCardElement.setAttribute('href', require('@/assets/cards/' + suit + '/' + card + '.svg'))
   }
 
+  showWinners () {
+    var winners = this.handHistory.matchAll('.+ collected \\$?\\d+(\\.\\d{2})?')
+    for (const winner of winners) {
+      console.log(winner[0].split(' '))
+      var winnerUsername = winner[0].split(' ')[0]
+      var amount = parseFloat(winner[0].split(' ')[2].replace('$', ''))
+      var seatToWin = this.getSeat(winnerUsername)
+      this.visualizeChipsOnTable(amount, seatToWin, 'win')
+      this.displayComment('WIN', winnerUsername, seatToWin)
+    }
+    for (const potGroup of document.getElementById('pot').querySelectorAll('g')) {
+      while (potGroup.firstChild) {
+        potGroup.firstChild.remove()
+      }
+    }
+  }
+
   gatherPlayersData (handHistory, playerUsername, seats) {
     var matches = handHistory.matchAll('Seat \\d: [^ ]+ \\(\\$?\\d+\\.?\\d*')
     var emptySeats = [1, 8, 6, 3, 5, 4, 7] // indexes where name must be empty depending on empty seats count
@@ -576,12 +620,17 @@ class ReplayService {
 
   updateChips (amount, element) {
     var chipsElement = element.getElementById('playerChips')
-    var chips = parseInt(chipsElement.textContent)
+    var chips = parseFloat(chipsElement.textContent.replace('$', ''))
+    if (Object.is(chips, NaN)) chips = 0
     chips -= amount
     if (chips === 0) {
       chipsElement.textContent = 'ALL-IN'
     } else {
-      chipsElement.textContent = chips
+      if (chips % 1 !== 0) {
+        chipsElement.textContent = '$' + chips.toFixed(2)
+      } else {
+        chipsElement.textContent = chips
+      }
     }
   }
 

@@ -4,7 +4,8 @@ const API_URL = 'http://localhost:8080/hands'
 
 class HandsService {
   async uploadHand (hand, username) {
-    let handId
+    var handId
+    console.log('uploading hands')
     await axios.post(API_URL + '/upload', { hand, username }).then(function (response) {
       handId = response.data.id
     })
@@ -24,8 +25,7 @@ class HandsService {
     await axios.post(API_URL + '/getHand', { id }).then(function (response) {
       handData = response.data
     }, function (error) {
-      console.log(error)
-      console.clear()
+      console.log('encountered an error: ' + error)
       router.push('/')
     })
     return handData
