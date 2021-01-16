@@ -1,5 +1,6 @@
 package com.PDOAReplayer.PDOA.Entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.sun.istack.NotNull;
 
 import javax.persistence.*;
@@ -23,10 +24,11 @@ public class Users {
 
     @NotNull
     @Column(name = "hash_password")
+    @JsonIgnore
     private String password;
 
-    @Column
-    private String country;
+    @Column(name = "country")
+    private String countryCode;
 
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "users_roles",
@@ -34,11 +36,11 @@ public class Users {
             inverseJoinColumns = @JoinColumn(name = "role_id"))
     private Set<Role> roles = new HashSet<>();
     public Users() {}
-    public Users(String fullName, String username, String password, String country) {
+    public Users(String fullName, String username, String password, String countryCode) {
         this.username = username;
         this.password = password;
         this.fullName = fullName;
-        this.country = country;
+        this.countryCode = countryCode;
     }
 
     public Long getId() {
@@ -71,5 +73,13 @@ public class Users {
 
     public void setRoles(Set<Role> roles) {
         this.roles = roles;
+    }
+
+    public String getCountryCode() {
+        return countryCode;
+    }
+
+    public void setCountryCode(String country) {
+        this.countryCode = countryCode;
     }
 }

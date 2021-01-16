@@ -57,7 +57,8 @@ public class AuthController {
         UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
         List<String> roles = userDetails.getAuthorities().stream().map(role -> role.getAuthority()).collect(Collectors.toList());
         if (userDetails.getAuthorities().stream().count() == 0) roles.add(ERole.ROLE_USER.toString());
-        return ResponseEntity.ok(new JwtResponse(jwt, userDetails.getId(), userDetails.getUsername(), roles));
+        String countryCode = userDetails.getCountryCode();
+        return ResponseEntity.ok(new JwtResponse(jwt, userDetails.getId(), userDetails.getUsername(), roles, countryCode));
     }
 
     @PostMapping("/register")

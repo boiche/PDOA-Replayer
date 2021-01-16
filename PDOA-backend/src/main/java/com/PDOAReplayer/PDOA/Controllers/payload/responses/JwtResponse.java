@@ -7,13 +7,15 @@ public class JwtResponse {
     private String type = "Bearer";
     private Long id;
     private String username;
+    private String countryCode;
     private List<String> roles;
 
-    public JwtResponse(String token, Long id, String username, List<String> roles) {
+    public JwtResponse(String token, Long id, String username, List<String> roles, String countryCode) {
         this.token = token;
         this.id = id;
         this.username = username;
         this.roles = roles;
+        this.countryCode = countryCode;
     }
 
     public String getToken() {
@@ -50,6 +52,14 @@ public class JwtResponse {
 
     public List<String> getRoles() {
         return roles;
+    }
+
+    public String getCountryCode() {
+        return countryCode;
+    }
+
+    public void setCountryCode(String countryCode) {
+        this.countryCode = countryCode;
     }
 
     public void setRoles(List<String> roles) {

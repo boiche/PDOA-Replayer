@@ -1,5 +1,7 @@
 package com.PDOAReplayer.PDOA.Entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import java.util.Date;
 
 public class HandsCredentials {

@@ -65,14 +65,18 @@ public class HandsController {
     }
 
     private String[] GetCards(String input) {
-        Pattern cardPattern = Pattern.compile("([2-9]|[TQJKA])[schd]", Pattern.MULTILINE);
+        Pattern cardPattern = Pattern.compile("Dealt to .+ \\[.+\\]", Pattern.MULTILINE);
         String[] cards = new String[2];
-        Integer matches = 0;
         Matcher matcher = cardPattern.matcher(input);
+        if (matcher.find()) {
+            String match = matcher.group();
+            match = match.substring(match.indexOf('[') + 1 , match.indexOf(']'));
+            cards = match.split(" ");
 
-        while(matches < 2 && matcher.find()) {
-            cards[matches] = matcher.group();
-            matches++;
+        } else {
+            for (int i = 0; i < cards.length; i++) {
+                cards[i] = "2B";
+            }
         }
 
         return cards;

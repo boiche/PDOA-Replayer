@@ -1,5 +1,4 @@
 import axios from 'axios'
-import authHeader from './auth-header.js'
 const API_URL = 'http://localhost:8080/users'
 
 class UsersService {
@@ -7,8 +6,8 @@ class UsersService {
     return axios.get(API_URL + '/all')
   }
 
-  getUserBoard () {
-    return axios.get(API_URL + '/user', { headers: authHeader() })
+  async getUser (userId) {
+    return axios.get(API_URL + '/user', { params: { id: parseInt(userId) } })
   }
 }
 

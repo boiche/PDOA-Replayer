@@ -30,7 +30,8 @@
             <template #button-content>
               <em>User</em>
             </template>
-            <b-dropdown-item href="/register">Register</b-dropdown-item>
+            <b-dropdown-item href="/register" v-if="!getUser()">Register</b-dropdown-item>
+            <b-dropdown-item href="/profile" v-else>Profile</b-dropdown-item>
             <b-dropdown-item href="/login" v-if="!getUser()">Login</b-dropdown-item>
             <b-dropdown-item @click.prevent="logout" v-else>Logout</b-dropdown-item>
           </b-nav-item-dropdown>

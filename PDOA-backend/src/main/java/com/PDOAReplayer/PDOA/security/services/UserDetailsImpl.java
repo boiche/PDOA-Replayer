@@ -18,18 +18,20 @@ public class UserDetailsImpl implements UserDetails {
     @JsonIgnore
     private String password;
     private Collection<? extends GrantedAuthority> authorities;
+    private String countryCode;
 
     public UserDetailsImpl(Long id, String username, String password,
-                           Collection<? extends GrantedAuthority> authorities) {
+                           Collection<? extends GrantedAuthority> authorities, String countryCode) {
         this.id = id;
         this.username = username;
         this.password = password;
         this.authorities = authorities;
+        this.countryCode=  countryCode;
     }
 
     public static UserDetailsImpl build(Users user) {
         List<GrantedAuthority> authorityList = user.getRoles().stream().map(role -> new SimpleGrantedAuthority(role.getName().name())).collect(Collectors.toList());
-        return new UserDetailsImpl(user.getId(), user.getUsername(), user.getPassword(), authorityList);
+        return new UserDetailsImpl(user.getId(), user.getUsername(), user.getPassword(), authorityList, user.getCountryCode());
     }
 
     @Override
@@ -65,6 +67,14 @@ public class UserDetailsImpl implements UserDetails {
 
     public void setAuthorities(Collection<? extends GrantedAuthority> authorities) {
         this.authorities = authorities;
+    }
+
+    public String getCountryCode() {
+        return countryCode;
+    }
+
+    public void setCountryCode(String countryCode) {
+        this.countryCode = countryCode;
     }
 
     @Override
