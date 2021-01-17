@@ -8,11 +8,13 @@ public class HandsCredentials {
     private String owner;
     private String[] cards;
     private Date uploaded;
+    private Long handId;
 
-    public HandsCredentials(String owner, String[] cards, Date uploaded) {
+    public HandsCredentials(String owner, String[] cards, Date uploaded, Long handId) {
         this.owner = owner;
         this.cards = cards;
         this.uploaded = uploaded;
+        this.handId = handId;
     }
 
     public String getOwner() {
@@ -25,5 +27,9 @@ public class HandsCredentials {
 
     public Date getUploaded() {
         return uploaded;
+    }
+
+    public Long getHandId() {
+        return handId;
     }
 }

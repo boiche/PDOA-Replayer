@@ -51,7 +51,8 @@ public class HandsController {
             credentials.add(new HandsCredentials(
                     usersRepository.findById(currentHand.getOwner()).get().getUsername(),
                     GetCards(currentHand.getHandHistory()),
-                    currentHand.getUploaded()));
+                    currentHand.getUploaded(),
+                    currentHand.getId()));
         }
 
         return credentials;
