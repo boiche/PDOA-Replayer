@@ -1,11 +1,10 @@
 <template>
   <div>
     <h1>You are logged in</h1>
+    <hr/>
     <div id="recentHands">
       <div class="row">
-        <div class="col-4">
-          <HandLink first="TC" second='KC'></HandLink>
-        </div>
+        <HandLink v-for="n in allHands" v-bind:key="n" :first="n.cards[0]" :second="n.cards[1]" :username="n.owner" :handId="n.handId"></HandLink>
       </div>
     </div>
   </div>
@@ -18,11 +17,16 @@ import HandLink from '@/components/HandLink.vue'
 export default {
   data () {
     return {
-      allHands: []
+      allHands: [],
+      cards: '',
+      username: '',
+      owner: '',
+      handId: ''
     }
   },
-  async mounted () {
+  async created () {
     this.allHands = await HandsService.getAll()
+    console.log(this.allHands)
   },
   components: {
     HandLink
