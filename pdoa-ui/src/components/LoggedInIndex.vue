@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h1>You are logged in</h1>
+    <h1>Welcome, {{username}}</h1>
     <hr/>
     <div id="recentHands">
       <div class="row">
@@ -17,7 +17,7 @@ import HandLink from '@/components/HandLink.vue'
 export default {
   data () {
     return {
-      allHands: [],
+      allHands: '',
       cards: '',
       username: '',
       owner: '',
@@ -27,6 +27,9 @@ export default {
   async created () {
     this.allHands = await HandsService.getAll()
     console.log(this.allHands)
+  },
+  mounted () {
+    this.username = this.$store.state.auth.user.username
   },
   components: {
     HandLink

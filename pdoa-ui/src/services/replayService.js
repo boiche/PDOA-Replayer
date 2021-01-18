@@ -584,7 +584,7 @@ class ReplayService {
     var playersHoleCards = this.handHistory.match('Dealt to .+')
     if (playersHoleCards) {
       var playersHoleCardsDetails = playersHoleCards[0].split(' ')
-      this.playerInitialSeat = this.handHistory.match('Seat \\d: ' + this.initialData.username)[0].substr(5, 1)
+      this.playerInitialSeat = this.handHistory.match('Seat \\d: ' + playersHoleCardsDetails[2])[0].substr(5, 1)
 
       var firstCard = playersHoleCardsDetails[3].replace('[', '')
       firstCard = firstCard.toUpperCase()
