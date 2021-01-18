@@ -44,7 +44,7 @@ export default {
   },
   created () {
     if (this.loggedIn) {
-      this.$router.push('/profile')
+      this.$router.push({ name: 'userProfile', params: { username: this.$store.state.auth.user.username } })
     }
   },
   methods: {
@@ -59,7 +59,7 @@ export default {
         if (this.user.username && this.user.password) {
           this.$store.dispatch('auth/login', this.user).then(
             () => {
-              this.$router.push('/profile')
+              this.$router.push({ name: 'userProfile', params: { username: this.$store.state.auth.user.username } })
             },
             error => {
               this.loading = false

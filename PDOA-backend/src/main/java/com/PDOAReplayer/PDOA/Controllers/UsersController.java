@@ -23,8 +23,18 @@ public class UsersController {
     }
 
     @GetMapping("/user")
-    public Users GetUser(@RequestParam Long id) {
-        Users user = usersRepository.findById(id).get();
-        return user;
+    public Users GetUser(@RequestParam String param, @RequestParam Boolean byUsername) {
+        try {
+            Users user;
+            if (byUsername) {
+                user = usersRepository.findByUsername(param).get();
+            } else {
+                user = usersRepository.findById(Long.parseLong(param)).get();
+            }
+            return user;
+        } catch (Exception e) {
+            logger.warn("No user was found with param: " + param);
+            return null;
+        }
     }
 }

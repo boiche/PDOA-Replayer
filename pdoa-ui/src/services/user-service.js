@@ -6,8 +6,12 @@ class UsersService {
     return axios.get(API_URL + '/all')
   }
 
-  async getUser (userId) {
-    return axios.get(API_URL + '/user', { params: { id: parseInt(userId) } })
+  async getUserById (userId) {
+    return axios.get(API_URL + '/user', { params: { param: parseInt(userId), byUsername: false } })
+  }
+
+  async getUserByUsername (username) {
+    return axios.get(API_URL + '/user', { params: { param: username, byUsername: true } })
   }
 }
 

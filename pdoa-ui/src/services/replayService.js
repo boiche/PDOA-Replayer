@@ -27,7 +27,7 @@ class ReplayService {
       if (this.playing) {
         var currentAction = this.actions[i]
         currentAction.method.call(this, currentAction.params)
-        await this.delay(500)
+        await this.delay(750)
       } else {
         return
       }
@@ -511,9 +511,10 @@ class ReplayService {
     var result = [[], []]
     var resultUsernames = afterPlayer.concat(beforePlayer)
     var resultChips = afterPlayerChips.concat(beforePlayerChips)
-    for (var i = 0; i < 9 - seats; i++) {
-      resultUsernames.splice(emptySeats[i], 0, '')
-      resultChips.splice(emptySeats[i], 0, '')
+    resultUsernames.splice(resultUsernames.length - 1, resultUsernames)
+    for (const index of emptySeats.slice(0, 9 - seats).sort()) {
+      resultUsernames.splice(index, 0, '')
+      resultChips.splice(index, 0, '')
     }
     result[0].push(resultUsernames)
     result[1].push(resultChips)
@@ -628,7 +629,7 @@ class ReplayService {
   }
 
   resetStacks () {
-    for (var i = 0; i < this.initialData.seats; i++) {
+    for (var i = 0; i < this.usernames.length; i++) {
       var currentUsername = this.usernames[i]
       if (currentUsername === '') {
         continue
@@ -774,7 +775,7 @@ class ReplayService {
     setTimeout(function () {
       actionText.textContent = username
       nextButton.removeAttribute('disabled')
-    }, 500)
+    }, 750)
   }
 
   updateChips (amount, element) {
