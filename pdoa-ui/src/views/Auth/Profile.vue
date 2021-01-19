@@ -44,7 +44,7 @@ export default {
     } else {
       this.flagURL = 'https://www.countryflags.io/' + this.$store.state.auth.user.countryCode + '/flat/32.png'
     }
-    for (var i = 0; i < 20; i++) {
+    for (var i = 0; i < this.allHands.length; i++) {
       if (this.allHands[i].owner === this.username) {
         this.ownerHands.push(this.allHands[i])
       }
