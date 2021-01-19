@@ -31,7 +31,7 @@
               <em>User</em>
             </template>
             <b-dropdown-item href="/register" v-if="!getUser()">Register</b-dropdown-item>
-            <b-dropdown-item href="/profile" v-else>Profile</b-dropdown-item>
+            <b-dropdown-item :href="userProfileLink" v-else>Profile</b-dropdown-item>
             <b-dropdown-item href="/login" v-if="!getUser()">Login</b-dropdown-item>
             <b-dropdown-item @click.prevent="logout" v-else>Logout</b-dropdown-item>
           </b-nav-item-dropdown>
@@ -42,6 +42,11 @@
 </template>
 <script>
 export default {
+  data () {
+    return {
+      userProfileLink: '/profile/'
+    }
+  },
   methods: {
     logout () {
       this.$store.dispatch('auth/logout')
@@ -50,6 +55,9 @@ export default {
     getUser () {
       return this.$store.state.auth.user
     }
+  },
+  created () {
+    this.userProfileLink += this.$store.state.auth.user.username
   }
 }
 </script>

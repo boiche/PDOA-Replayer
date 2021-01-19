@@ -16,7 +16,7 @@
       <Seat :id="'seat7'" :chips="chips[6]" :username="usernames[6]" :x="975" :y="45" firstSuit="backs" secondSuit="backs" firstCard="2B" secondCard="2B"></Seat>
       <Seat :id="'seat3'" :chips="chips[7]" :username="usernames[7]" :x="1150" :y="190" firstSuit="backs" secondSuit="backs" firstCard="2B" secondCard="2B"></Seat>
       <Seat :id="'seat8'" :chips="chips[8]" :username="usernames[8]" :x="1000" :y="350" firstSuit="backs" secondSuit="backs" firstCard="2B" secondCard="2B"></Seat>
-      <Seat :id="'seat1'" :chips="chips[0]" :username="usernames[0]" :x="550" :y="420" :firstSuit="playersFirstSuit" :secondSuit="playersSecondSuit" :firstCard="playersFirstCard" :secondCard="playersSecondCard"></Seat>
+      <Seat :id="'seat1'" :chips="chips[0]" :username="usernames[0]" :x="550" :y="420" firstSuit="backs" secondSuit="backs" firstCard="2B" secondCard="2B"></Seat>
     </svg>
 </template>
 <script>
@@ -30,11 +30,6 @@ import ReplayService from '../../services/replayService.js'
 export default {
   data () {
     return {
-      playerInitialSeat: '',
-      playersFirstSuit: 'backs',
-      playersFirstCard: '2B',
-      playersSecondSuit: 'backs',
-      playersSecondCard: '2B',
       usernames: [],
       chips: [],
       flop: [

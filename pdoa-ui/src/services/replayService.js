@@ -18,7 +18,6 @@ class ReplayService {
   potInfoElement
   tableElement
   initialData
-  tableComponent
 
   // section for replay controlls
   async playAll (caller) {
@@ -434,8 +433,8 @@ class ReplayService {
   }
 
   // section for initializing replay
-  populateSteps (hand, caller) {
-    this.initializeReplay(hand, caller)
+  populateSteps (hand) {
+    this.initializeReplay(hand)
     if (this.handHistory.match(this.antesPattern)) {
       this.actions.push({ method: this.postAntes, params: null })
     }
@@ -460,8 +459,7 @@ class ReplayService {
     this.actions.push({ method: this.showWinners, params: null })
   }
 
-  initializeReplay (hand, caller) {
-    this.tableComponent = caller
+  initializeReplay (hand) {
     this.initialData = hand
     this.handHistory = hand.handHistory.handHistory
     this.handActions = this.handHistory.split('\n')
@@ -474,8 +472,8 @@ class ReplayService {
     this.tableElement = document.getElementById('table')
     this.potService.reset()
     this.setButtonCoords()
-    this.dealPlayerCards(caller)
     this.hideUnseated()
+    this.dealPlayerCards()
   }
 
   gatherPlayersData (handHistory, playerUsername, seats) {
@@ -581,9 +579,10 @@ class ReplayService {
     }
   }
 
-  dealPlayerCards (caller) {
+  dealPlayerCards () {
     var playersHoleCards = this.handHistory.match('Dealt to .+')
     if (playersHoleCards) {
+      var playersCardImages = document.getElementById('seat1').querySelectorAll('image')
       var playersHoleCardsDetails = playersHoleCards[0].split(' ')
       this.playerInitialSeat = this.handHistory.match('Seat \\d: ' + playersHoleCardsDetails[2])[0].substr(5, 1)
 
@@ -591,23 +590,23 @@ class ReplayService {
       firstCard = firstCard.toUpperCase()
       var suit = firstCard[1]
       switch (suit.toUpperCase()) {
-        case 'S': caller.playersFirstSuit = 'spades'; break
-        case 'C': caller.playersFirstSuit = 'clubs'; break
-        case 'H': caller.playersFirstSuit = 'hearts'; break
-        case 'D': caller.playersFirstSuit = 'diamonds'; break
+        case 'S': suit = 'spades'; break
+        case 'C': suit = 'clubs'; break
+        case 'H': suit = 'hearts'; break
+        case 'D': suit = 'diamonds'; break
       }
-      caller.playersFirstCard = firstCard
+      playersCardImages[0].setAttribute('href', require('@/assets/cards/' + suit + '/' + firstCard + '.svg'))
 
       var secondCard = playersHoleCardsDetails[4].replace(']', '')
       secondCard = secondCard.toUpperCase()
       suit = secondCard[1]
       switch (suit.toUpperCase()) {
-        case 'S': caller.playersSecondSuit = 'spades'; break
-        case 'C': caller.playersSecondSuit = 'clubs'; break
-        case 'H': caller.playersSecondSuit = 'hearts'; break
-        case 'D': caller.playersSecondSuit = 'diamonds'; break
+        case 'S': suit = 'spades'; break
+        case 'C': suit = 'clubs'; break
+        case 'H': suit = 'hearts'; break
+        case 'D': suit = 'diamonds'; break
       }
-      caller.playersSecondCard = secondCard
+      playersCardImages[1].setAttribute('href', require('@/assets/cards/' + suit + '/' + secondCard + '.svg'))
     }
   }
 
@@ -618,7 +617,7 @@ class ReplayService {
     this.resetStacks()
     this.clearBoard()
     this.removePlayersBetGroups()
-    this.initializeReplay(this.initialData, this.tableComponent)
+    this.initializeReplay(this.initialData)
   }
 
   hideHoleCards () {
