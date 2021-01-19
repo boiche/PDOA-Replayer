@@ -1,11 +1,11 @@
 <template>
   <div class="border border-dark "
-       style="background: lightyellow;margin-bottom: 10px; border-radius: 25px; margin-left: 100px; width:25%">
+       style="background: lightyellow; margin-bottom: 10px; border-radius: 25px; margin-left: 100px; width:25%">
     <a :href="link" id="link">
     <img :src="firstCard" id="firstCard" height="200px" style="margin-top: 5px; margin-right: 3px">
     <img :src="secondCard" id="secondCard" height="200px" style="margin-top: 5px">
     <h5
-      style="background: deepskyblue; color: black;margin-top: 5px;border-radius: 25px; display: inline-block; font-size: 12px; font-weight: bold; line-height: 12px; padding: 10px 15px 8px; text-transform: uppercase;">Posted by {{username}}</h5>
+      style="background: deepskyblue; color: black; margin-top: 5px; border-radius: 25px; display: inline-block; font-size: 12px; font-weight: bold; line-height: 12px; padding: 10px 15px 8px; text-transform: uppercase;">Posted by {{username}}</h5>
     </a>
   </div>
 </template>
